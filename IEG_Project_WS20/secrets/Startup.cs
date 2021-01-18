@@ -40,7 +40,7 @@ namespace Secrets
             {
                 app.UseHsts();
             }
-
+            OnStartup();
             app.UseHttpsRedirection();
             app.UseMvc();
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
@@ -49,7 +49,6 @@ namespace Secrets
         private void OnStartup()
         {
             var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://mostwanteddiscovery.azurewebsites.net/api/ServiceDiscovery/");
-            //var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://localhost:44323/api/ServiceDiscovery");
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "POST";
 
@@ -61,7 +60,7 @@ namespace Secrets
                     ["ServiceType"] = ServiceType,
                     ["ServiceUri"] = ServiceUri
                 };
-
+                Console.WriteLine(json);
                 streamWriter.Write(json);
             }
 
@@ -70,7 +69,7 @@ namespace Secrets
 
         private void OnShutdown()
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create($"https://mostwanteddiscovery.azurewebsites.net/api/ServiceDiscovery/id/" + _serviceId);
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create($"https://mostwanteddiscovery.azurewebsites.net/api/ServiceDiscovery/" + _serviceId);
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "DELETE";
 

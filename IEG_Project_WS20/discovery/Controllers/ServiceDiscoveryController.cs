@@ -40,7 +40,7 @@ namespace Discovery.Controllers
 
         // GET: api/ServiceDiscovery/database
         [HttpGet("id/{id}")]
-        public IActionResult GetById(int id)
+        public IActionResult GetById(string id)
         {
             return Ok(GetServiceById(id));
         }
@@ -54,14 +54,14 @@ namespace Discovery.Controllers
 
         // PUT: api/ServiceDiscovery/1
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] JObject value)
+        public void Put(string id, [FromBody] JObject value)
         {
             UpdateService(id, value);
         }
 
         // DELETE: api/ServiceDiscovery/1
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public void Delete(string id)
         {
             DeleteService(id);
         }
@@ -99,7 +99,7 @@ namespace Discovery.Controllers
             }
         }
 
-        private void UpdateService(int id, JObject service)
+        private void UpdateService(string id, JObject service)
         {
             using (var conn = new SqlConnection(ServiceDbConnectionString))
             {
@@ -134,7 +134,7 @@ namespace Discovery.Controllers
 
         }
 
-        private void DeleteService(int id)
+        private void DeleteService(string id)
         {
             using (var conn = new SqlConnection(ServiceDbConnectionString))
             {
@@ -143,7 +143,7 @@ namespace Discovery.Controllers
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
-                    DbType = DbType.Int64,
+                    DbType = DbType.String,
                     Value = id
                 });
 
@@ -213,7 +213,7 @@ namespace Discovery.Controllers
             return list;
         }
 
-        public Service GetServiceById(int id)
+        public Service GetServiceById(string id)
         {
             var list = new List<Service>();
 
