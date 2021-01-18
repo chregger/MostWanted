@@ -2,10 +2,10 @@
 {
     public class Question
     {
-        public int Id { get; set; }
+        public int QuestionId { get; set; }
 
-        public string Type { get; set; }
+        public string Questiontext { get; set; }
 
-        public string Content { get; set; }
+        public int SurveyID { get; set; }
     }
 }

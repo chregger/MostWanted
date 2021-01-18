@@ -34,15 +34,15 @@ namespace Administration.Controllers
         }
 
         // GET: api/Surveys/random
-        [HttpGet("{SurveyType}", Name = "Get")]
-        public IActionResult GetByType(string surveyType)
+        [HttpGet("{SurveyName}")]
+        public IActionResult GetByName(string surveyName)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            return Ok(GetAllSurveysByType(surveyType));
+            return Ok(GetAllSurveysByName(surveyName));
         }
 
         // GET: api/Surveys/1
-        [HttpGet("id/{id}", Name = "GetById")]
+        [HttpGet("id/{id}")]
         public IActionResult GetById(int id)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
@@ -54,7 +54,7 @@ namespace Administration.Controllers
         public void Post([FromBody] JObject value)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            AddSurvey(value["ID"].Value<string>(), value, value["SurveyType"].Value<string>());
+            AddSurvey(value);
         }
 
         // PUT: api/Surveys/1
@@ -62,7 +62,7 @@ namespace Administration.Controllers
         public void Put(int id, [FromBody] JObject value)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            UpdateSurvey(value["ID"].Value<string>(), value, value["SurveyType"].Value<string>());
+            UpdateSurvey(id, value);
         }
 
         // DELETE: api/Surveys/1
@@ -73,34 +73,20 @@ namespace Administration.Controllers
             DeleteSurvey(id);
         }
 
-        private void AddSurvey(string id, JObject survey, string type)
+        private void AddSurvey(JObject survey)
         {
-            var json = JsonConvert.SerializeObject(survey, Formatting.Indented);
             using (var conn = new SqlConnection(SurveyDbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"INSERT INTO `surveys` (`id`,`Type`,`Content`) 
-                                                        VALUES (@id, @type, @content);", conn);
+                var cmd = new SqlCommand(@"INSERT INTO Surveys (SurveyName) 
+                                                        VALUES (@name);", conn);
+                
                 cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@type",
+                    ParameterName = "@name",
                     DbType = DbType.String,
-                    Value = type
+                    Value = survey["SurveyName"].Value<string>()
                 });
-                cmd.Parameters.Add(new SqlParameter
-                {
-                    ParameterName = "@content",
-                    DbType = DbType.String,
-                    Value = survey
-                });
-                cmd.Parameters.Add(new SqlParameter
-                {
-                    ParameterName = "@id",
-                    DbType = DbType.String,
-                    Value = id
-                });
-
-                Console.WriteLine(json);
                 using (var reader = cmd.ExecuteReader())
                 {
 
@@ -108,25 +94,18 @@ namespace Administration.Controllers
             }
         }
 
-        private void UpdateSurvey(string id, JObject survey, string type)
+        private void UpdateSurvey(int id, JObject survey)
         {
-            var json = JsonConvert.SerializeObject(survey, Formatting.Indented);
             using (var conn = new SqlConnection(SurveyDbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"UPDATE `surveys` (`Type`,`Content`) 
-                                                        VALUES (@type, @content) WHERE id = @id;", conn);
+                var cmd = new SqlCommand(@"UPDATE surveys SET SurveyName = @name WHERE id = @id;", conn);
+                
                 cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@type",
+                    ParameterName = "@name",
                     DbType = DbType.String,
-                    Value = type
-                });
-                cmd.Parameters.Add(new SqlParameter
-                {
-                    ParameterName = "@content",
-                    DbType = DbType.String,
-                    Value = survey
+                    Value = survey["SurveyName"].Value<string>()
                 });
                 cmd.Parameters.Add(new SqlParameter
                 {
@@ -134,8 +113,6 @@ namespace Administration.Controllers
                     DbType = DbType.String,
                     Value = id
                 });
-
-                Console.WriteLine(json);
                 using (var reader = cmd.ExecuteReader())
                 {
 
@@ -149,7 +126,7 @@ namespace Administration.Controllers
             using (var conn = new SqlConnection(SurveyDbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"DELETE FROM `surveys` WHERE id = @id;", conn);
+                var cmd = new SqlCommand(@"DELETE FROM surveys WHERE id = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
@@ -180,10 +157,8 @@ namespace Administration.Controllers
                     {
                         list.Add(new Survey()
                         {
-                            Id = Convert.ToInt16(reader["id"]),
-                            Type = reader["type"].ToString(),
-                            Content = reader["content"].ToString(),
-
+                            Id = Convert.ToInt16(reader["SurveyID"]),
+                            Name = reader["SurveyName"].ToString()
                         });
                     }
                 }
@@ -191,19 +166,19 @@ namespace Administration.Controllers
             return list;
         }
 
-        public List<Survey> GetAllSurveysByType(string surveyType)
+        public List<Survey> GetAllSurveysByName(string surveyname)
         {
             var list = new List<Survey>();
 
             using (var conn = new SqlConnection(SurveyDbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"SELECT * FROM surveys WHERE `type` = @SurveyType;", conn);
+                var cmd = new SqlCommand(@"SELECT * FROM Surveys WHERE SurveyName = @SurveyName;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@SurveyType",
+                    ParameterName = "@SurveyName",
                     DbType = DbType.String,
-                    Value = surveyType,
+                    Value = surveyname
                 });
 
                 using (var reader = cmd.ExecuteReader())
@@ -212,10 +187,8 @@ namespace Administration.Controllers
                     {
                         list.Add(new Survey()
                         {
-                            Id = Convert.ToInt16(reader["id"]),
-                            Type = reader["type"].ToString(),
-                            Content = reader["content"].ToString(),
-
+                            Id = Convert.ToInt16(reader["SurveyID"]),
+                            Name = reader["SurveyName"].ToString()
                         });
                     }
                 }
@@ -230,7 +203,7 @@ namespace Administration.Controllers
             using (var conn = new SqlConnection(SurveyDbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"SELECT * FROM surveys WHERE `id` = @id;", conn);
+                var cmd = new SqlCommand(@"SELECT * FROM surveys WHERE id = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
@@ -244,10 +217,8 @@ namespace Administration.Controllers
                     {
                         list.Add(new Survey()
                         {
-                            Id = Convert.ToInt16(reader["id"]),
-                            Type = reader["type"].ToString(),
-                            Content = reader["content"].ToString(),
-
+                            Id = Convert.ToInt16(reader["SurveyID"]),
+                            Name = reader["SurveyName"].ToString(),
                         });
                     }
                 }

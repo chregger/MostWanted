@@ -34,10 +34,10 @@ namespace Administration.Controllers
 
         // GET: api/Survey/Random
         [HttpGet("Survey/{SurveyID}")]
-        public IActionResult GetBySurvey(int SurveyID)
+        public IActionResult GetQuestionsFromSurvey(int SurveyID)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            return Ok(GetAllQuestionsBySurvey(SurveyID));
+            return Ok(GetQuestionsFromSurvey(SurveyID));
         }
 
         // GET: api/Questions/1
@@ -53,7 +53,7 @@ namespace Administration.Controllers
         public void Post([FromBody] JObject value)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            AddQuestion(value, value["QuestionType"].Value<string>());
+            AddQuestion(value);
         }
 
         // PUT: api/Questions/1
@@ -61,7 +61,7 @@ namespace Administration.Controllers
         public void Put(int id, [FromBody] JObject value)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            UpdateQuestion(value["ID"].Value<string>(), value, value["QuestionType"].Value<string>());
+            UpdateQuestion(id, value);
         }
 
         // DELETE: api/Questions/1
@@ -72,28 +72,28 @@ namespace Administration.Controllers
             DeleteQuestion(id);
         }
 
-        private void AddQuestion(JObject question, string type)
+        private void AddQuestion(JObject question)
         {
             var json = JsonConvert.SerializeObject(question, Formatting.Indented);
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"INSERT INTO `questions` (`Type`,`Content`) 
-                                                        VALUES (@type, @content);", conn);
+                var cmd = new SqlCommand(@"INSERT INTO Questions (SurveyID, Question) 
+                                                        VALUES (@surveyid, @question);", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@type",
-                    DbType = DbType.String,
-                    Value = type
+                    ParameterName = "@surveyid",
+                    DbType = DbType.Int32,
+                    Value = question["SurveyID"].Value<int>()
                 });
                 cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@content",
+                    ParameterName = "@question",
                     DbType = DbType.String,
-                    Value = question
+                    Value = question["Question"].Value<string>()
+
                 });
 
-                Console.WriteLine(json);
                 using (var reader = cmd.ExecuteReader())
                 {
 
@@ -101,30 +101,31 @@ namespace Administration.Controllers
             }
         }
 
-        private void UpdateQuestion(string id, JObject question, string type)
+        private void UpdateQuestion(int id, JObject question)
         {
             var json = JsonConvert.SerializeObject(question, Formatting.Indented);
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"UPDATE `questions` (`Type`,`Content`) 
-                                                        VALUES (@type, @content) WHERE id = @id;", conn);
+                var cmd = new SqlCommand(@"UPDATE Questions SET SurveyID = @surveyID, Question = @question WHERE id = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@type",
-                    DbType = DbType.String,
-                    Value = type
+                    ParameterName = "@surveyID",
+                    DbType = DbType.Int32,
+                    Value = question["SurveyID"].Value<int>()
+
                 });
                 cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@content",
+                    ParameterName = "@question",
                     DbType = DbType.String,
-                    Value = question
+                    Value = question["Question"].Value<int>()
+
                 });
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
-                    DbType = DbType.String,
+                    DbType = DbType.Int32,
                     Value = id
                 });
 
@@ -142,7 +143,7 @@ namespace Administration.Controllers
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"DELETE FROM `questions` WHERE id = @id;", conn);
+                var cmd = new SqlCommand(@"DELETE FROM Questions WHERE id = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
@@ -173,10 +174,9 @@ namespace Administration.Controllers
                     {
                         list.Add(new Question()
                         {
-                            Id = Convert.ToInt16(reader["id"]),
-                            Type = reader["type"].ToString(),
-                            Content = reader["content"].ToString(),
-
+                            QuestionId = Convert.ToInt16(reader["QuestionID"]),
+                            SurveyID = Convert.ToInt16(reader["SurveyID"]),
+                            Questiontext = reader["Question"].ToString(),
                         });
                     }
                 }
@@ -191,11 +191,11 @@ namespace Administration.Controllers
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"SELECT * FROM questions WHERE `type` = @QuestionType;", conn);
+                var cmd = new SqlCommand(@"SELECT * FROM questions WHERE SurveyID = @surveyid;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@QuestionType",
-                    DbType = DbType.String,
+                    ParameterName = "@surveyid",
+                    DbType = DbType.Int32,
                     Value = surveyID,
                 });
 
@@ -205,10 +205,9 @@ namespace Administration.Controllers
                     {
                         list.Add(new Question()
                         {
-                            Id = Convert.ToInt16(reader["id"]),
-                            Type = reader["type"].ToString(),
-                            Content = reader["content"].ToString(),
-
+                            QuestionId = Convert.ToInt16(reader["QuestionID"]),
+                            SurveyID = Convert.ToInt16(reader["SurveyID"]),
+                            Questiontext = reader["Question"].ToString(),
                         });
                     }
                 }
@@ -223,7 +222,7 @@ namespace Administration.Controllers
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"SELECT * FROM questions WHERE `id` = @id;", conn);
+                var cmd = new SqlCommand(@"SELECT * FROM questions WHERE QuestionID = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
@@ -237,9 +236,9 @@ namespace Administration.Controllers
                     {
                         list.Add(new Question()
                         {
-                            Id = Convert.ToInt16(reader["id"]),
-                            Type = reader["type"].ToString(),
-                            Content = reader["content"].ToString(),
+                            QuestionId = Convert.ToInt16(reader["QuestionID"]),
+                            SurveyID = Convert.ToInt16(reader["SurveyID"]),
+                            Questiontext = reader["Question"].ToString(),
 
                         });
                     }

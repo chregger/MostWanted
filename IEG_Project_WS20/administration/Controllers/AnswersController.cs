@@ -80,7 +80,7 @@ namespace Administration.Controllers
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"INSERT INTO `Answers` (`QuestionID`,`Answer`) 
+                var cmd = new SqlCommand(@"INSERT INTO Answers (QuestionID, Answer) 
                                                         VALUES (@questionID, @Answer);", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
@@ -95,7 +95,6 @@ namespace Administration.Controllers
                     Value = answer["Answer"].Value<string>()
                 });
 
-                Console.WriteLine(JsonConvert.SerializeObject(answer, Formatting.Indented));
                 using (var reader = cmd.ExecuteReader())
                 {
 
@@ -105,12 +104,10 @@ namespace Administration.Controllers
 
         private void UpdateAnswer(string id, JObject answer)
         {
-            var json = JsonConvert.SerializeObject(answer, Formatting.Indented);
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"UPDATE `Answers` (QuestionID`,`Answer`) 
-                                                        VALUES (@questionID, @answer) WHERE AnswerID = @id;", conn);
+                var cmd = new SqlCommand(@"UPDATE Answers SET QuestionID = @questionID, Answer = @answer WHERE AnswerID = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@questionID",
@@ -132,7 +129,6 @@ namespace Administration.Controllers
                     Value = id
                 });
 
-                Console.WriteLine(json);
                 using (var reader = cmd.ExecuteReader())
                 {
 
@@ -146,7 +142,7 @@ namespace Administration.Controllers
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"DELETE FROM `Answers` WHERE AnswerID = @id;", conn);
+                var cmd = new SqlCommand(@"DELETE FROM Answers WHERE AnswerID = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
@@ -179,7 +175,7 @@ namespace Administration.Controllers
                         {
                             AnswerId = Convert.ToInt16(reader["AnswerID"]),
                             QuestionId = Convert.ToInt16(reader["QuestionID"]),
-                            Answermessage = reader["Answer"].ToString(),
+                            Answertext = reader["Answer"].ToString(),
 
                         });
                     }
@@ -195,7 +191,7 @@ namespace Administration.Controllers
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"SELECT * FROM answers WHERE `QuestionID` = @questionID;", conn);
+                var cmd = new SqlCommand(@"SELECT * FROM answers WHERE QuestionID = @questionID;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@questionID",
@@ -211,7 +207,7 @@ namespace Administration.Controllers
                         {
                             AnswerId = Convert.ToInt16(reader["AnswerID"]),
                             QuestionId = Convert.ToInt16(reader["QuestionID"]),
-                            Answermessage = reader["Answer"].ToString(),
+                            Answertext = reader["Answer"].ToString(),
 
                         });
                     }
@@ -227,7 +223,7 @@ namespace Administration.Controllers
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"SELECT * FROM answers WHERE `AnswerID` = @id;", conn);
+                var cmd = new SqlCommand(@"SELECT * FROM answers WHERE AnswerID = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
@@ -243,7 +239,7 @@ namespace Administration.Controllers
                         {
                             AnswerId = Convert.ToInt16(reader["AnswerID"]),
                             QuestionId = Convert.ToInt16(reader["QuestionID"]),
-                            Answermessage = reader["Answer"].ToString(),
+                            Answertext = reader["Answer"].ToString(),
 
                         });
                     }

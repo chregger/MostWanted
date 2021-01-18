@@ -67,7 +67,6 @@ namespace Administration
         private void OnStartup()
         {
             var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://mostwanteddiscovery.azurewebsites.net/api/ServiceDiscovery/");
-            //var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://localhost:44323/api/ServiceDiscovery");
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "POST";
 

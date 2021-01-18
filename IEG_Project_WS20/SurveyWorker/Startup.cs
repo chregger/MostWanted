@@ -72,7 +72,6 @@ namespace SurveyWorker
                     ["ServiceType"] = ServiceType,
                     ["ServiceUri"] = ServiceUri
                 };
-                //var json = $"{{\"ID\":\"{serviceId}\",\"ServiceType\":\"{serviceType}\",\"URI\":\"{serviceUri}\"}}";
 
                 streamWriter.Write(json);
             }
