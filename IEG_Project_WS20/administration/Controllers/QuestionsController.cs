@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using Administration.Models;
 using Logging;
 using Microsoft.AspNetCore.Mvc;
-using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -16,7 +16,7 @@ namespace Administration.Controllers
     [Route("api/[controller]")]
     public class QuestionsController : ControllerBase
     {
-        private const string DbConnectionString = "Server=most-wanted-database.mysql.database.azure.com; Port=3306; Database=surveys; Uid=mostwanted@most-wanted-database; Pwd=start1234@; SslMode=Preferred;";
+        private const string DbConnectionString = "Server=tcp:most-wanted.database.windows.net,1433;Initial Catalog=Surveys;Persist Security Info=False;User ID=dbuser;Password=IEG_WS2020;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         private readonly Logger _logger;
 
         public QuestionsController()
@@ -32,12 +32,12 @@ namespace Administration.Controllers
             return Ok(GetAllQuestions());
         }
 
-        // GET: api/Questions/Random
-        [HttpGet("{QuestionType}")]
-        public IActionResult GetByType(string questionType)
+        // GET: api/Survey/Random
+        [HttpGet("Survey/{SurveyID}")]
+        public IActionResult GetBySurvey(int SurveyID)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            return Ok(GetAllQuestionsByType(questionType));
+            return Ok(GetAllQuestionsBySurvey(SurveyID));
         }
 
         // GET: api/Questions/1
@@ -75,18 +75,18 @@ namespace Administration.Controllers
         private void AddQuestion(JObject question, string type)
         {
             var json = JsonConvert.SerializeObject(question, Formatting.Indented);
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"INSERT INTO `questions` (`Type`,`Content`) 
+                var cmd = new SqlCommand(@"INSERT INTO `questions` (`Type`,`Content`) 
                                                         VALUES (@type, @content);", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@type",
                     DbType = DbType.String,
                     Value = type
                 });
-                cmd.Parameters.Add(new MySqlParameter
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@content",
                     DbType = DbType.String,
@@ -104,24 +104,24 @@ namespace Administration.Controllers
         private void UpdateQuestion(string id, JObject question, string type)
         {
             var json = JsonConvert.SerializeObject(question, Formatting.Indented);
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"UPDATE `questions` (`Type`,`Content`) 
+                var cmd = new SqlCommand(@"UPDATE `questions` (`Type`,`Content`) 
                                                         VALUES (@type, @content) WHERE id = @id;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@type",
                     DbType = DbType.String,
                     Value = type
                 });
-                cmd.Parameters.Add(new MySqlParameter
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@content",
                     DbType = DbType.String,
                     Value = question
                 });
-                cmd.Parameters.Add(new MySqlParameter
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
                     DbType = DbType.String,
@@ -139,11 +139,11 @@ namespace Administration.Controllers
 
         private void DeleteQuestion(int id)
         {
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"DELETE FROM `questions` WHERE id = @id;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"DELETE FROM `questions` WHERE id = @id;", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
                     DbType = DbType.Int64,
@@ -162,10 +162,10 @@ namespace Administration.Controllers
         {
             var list = new List<Question>();
 
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand("SELECT * FROM questions;", conn);
+                var cmd = new SqlCommand("SELECT * FROM questions;", conn);
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -184,19 +184,19 @@ namespace Administration.Controllers
             return list;
         }
 
-        public List<Question> GetAllQuestionsByType(string questionType)
+        public List<Question> GetAllQuestionsBySurvey(int surveyID)
         {
             var list = new List<Question>();
 
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"SELECT * FROM questions WHERE `type` = @QuestionType;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"SELECT * FROM questions WHERE `type` = @QuestionType;", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@QuestionType",
                     DbType = DbType.String,
-                    Value = questionType,
+                    Value = surveyID,
                 });
 
                 using (var reader = cmd.ExecuteReader())
@@ -220,11 +220,11 @@ namespace Administration.Controllers
         {
             var list = new List<Question>();
 
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"SELECT * FROM questions WHERE `id` = @id;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"SELECT * FROM questions WHERE `id` = @id;", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
                     DbType = DbType.Int32,

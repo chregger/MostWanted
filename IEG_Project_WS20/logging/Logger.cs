@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Data;
-using MySql.Data.MySqlClient;
+using System.Data.SqlClient;
 
 namespace Logging
 {
     public class Logger
     {
-        private const string DbConnectionString = "Server=most-wanted-database.mysql.database.azure.com; Port=3306; Database=logs; Uid=mostwanted@most-wanted-database; Pwd=start1234@; SslMode=Preferred;";
-        private readonly string _type;
+        private const string DbConnectionString = "Server=tcp:most-wanted.database.windows.net,1433;Initial Catalog=Logging;Persist Security Info=False;User ID=dbuser;Password=IEG_WS2020;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        private readonly string _context;
 
-        public Logger(string type)
+        public Logger(string context)
         {
-            _type = type;
+            _context = context;
         }
 
         public void Log(string log)
@@ -21,28 +21,28 @@ namespace Logging
 
         private void AddLog(string log)
         {
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"INSERT INTO `logs` (`type`,`content`,`timestamp`) 
-                                                        VALUES (@type, @content, @timestamp);", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"INSERT INTO [dbo].[Logs] (Message,CreatedTime,Context) 
+                                                        VALUES (@message, @createdtime, @context);", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@type",
-                    DbType = DbType.String,
-                    Value = _type
-                });
-                cmd.Parameters.Add(new MySqlParameter
-                {
-                    ParameterName = "@content",
+                    ParameterName = "@message",
                     DbType = DbType.String,
                     Value = log
                 });
-                cmd.Parameters.Add(new MySqlParameter
+                cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@timestamp",
-                    DbType = DbType.DateTime,
+                    ParameterName = "@createdtime",
+                    DbType = DbType.DateTime2,
                     Value = DateTime.Now
+                });
+                cmd.Parameters.Add(new SqlParameter
+                {
+                    ParameterName = "@context",
+                    DbType = DbType.String,
+                    Value = _context
                 });
 
                 using (var reader = cmd.ExecuteReader())

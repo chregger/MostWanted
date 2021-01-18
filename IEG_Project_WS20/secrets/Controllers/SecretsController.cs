@@ -5,10 +5,10 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using Logging;
-using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Secrets.Models;
+using System.Data.SqlClient;
 
 namespace Secrets.Controllers
 {
@@ -16,7 +16,7 @@ namespace Secrets.Controllers
     [Route("api/[controller]")]
     public class SecretsController : ControllerBase
     {
-        private const string DbConnectionString = "Server=most-wanted-database.mysql.database.azure.com; Port=3306; Database=secrets; Uid=mostwanted@most-wanted-database; Pwd=start1234@; SslMode=Preferred;";
+        private const string DbConnectionString = "Server=tcp:most-wanted.database.windows.net,1433;Initial Catalog=Secrets;Persist Security Info=False;User ID=dbuser;Password=IEG_WS2020;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         private readonly Logger _logger;
 
         public SecretsController()
@@ -24,12 +24,12 @@ namespace Secrets.Controllers
             _logger = new Logger(typeof(SecretsController).FullName);
         }
 
-        //// GET: api/Secrets
-        //[HttpGet]
-        //public IActionResult Get()
-        //{
-        //    return Ok(GetAllSecrets());
-        //}
+        // GET: api/Secrets
+        [HttpGet]
+        public IActionResult Get()
+        {
+            return Ok(GetAllSecrets());
+        }
 
         // GET: api/Secrets/Random
         [HttpGet("{SecretType}")]
@@ -47,46 +47,52 @@ namespace Secrets.Controllers
             return Ok(GetSecretById(id));
         }
 
-        //// POST: api/Secrets
-        //[HttpPost]
-        //public void Post([FromBody] JObject value)
-        //{
-        //    AddSecret(value, value["SecretType"].Value<string>());
-        //}
+        // POST: api/Secrets
+        [HttpPost]
+        public void Post([FromBody] JObject value)
+        {
+            AddSecret(value);
+        }
 
-        //// PUT: api/Secrets/1
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] Newtonsoft.Json.Linq.JObject value)
-        //{
-        //    UpdateSecret(value["ID"].Value<string>(), value, value["SecretType"].Value<string>());
-        //}
+        // PUT: api/Secrets/1
+        [HttpPut("{id}")]
+        public void Put(int id, [FromBody] JObject value)
+        {
+            UpdateSecret(id, value);
+        }
 
-        //// DELETE: api/Secrets/1
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //    DeleteSecret(id);
-        //}
+        // DELETE: api/Secrets/1
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+            DeleteSecret(id);
+        }
 
-        private void AddSecret(JObject secret, string type)
+        private void AddSecret(JObject secret)
         {
             var json = JsonConvert.SerializeObject(secret, Formatting.Indented);
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"INSERT INTO `Secrets` (`Type`,`Content`) 
-                                                        VALUES (@type, @content);", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"INSERT INTO `Secrets` (`SecretID`, `SecretType`,`Password`) 
+                                                        VALUES (@id, @type, @password);", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@type",
                     DbType = DbType.String,
-                    Value = type
+                    Value = secret["SecretType"].Value<string>()
                 });
-                cmd.Parameters.Add(new MySqlParameter
+                cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@content",
+                    ParameterName = "@password",
                     DbType = DbType.String,
-                    Value = secret
+                    Value = secret["Password"].Value<string>()
+                });
+                cmd.Parameters.Add(new SqlParameter
+                {
+                    ParameterName = "@id",
+                    DbType = DbType.Int32,
+                    Value = secret["SecretID"].Value<string>()
                 });
 
                 Console.WriteLine(json);
@@ -97,30 +103,30 @@ namespace Secrets.Controllers
             }
         }
 
-        private void UpdateSecret(string id, JObject secret, string type)
+        private void UpdateSecret(int id, JObject secret)
         {
             var json = JsonConvert.SerializeObject(secret, Formatting.Indented);
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"UPDATE `Secrets` (`Type`,`Content`) 
-                                                        VALUES (@type, @content) WHERE id = @id;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"UPDATE `Secrets` (`SecretType`,`Password`) 
+                                                        VALUES (@type, @password) WHERE SecretID = @id;", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@type",
                     DbType = DbType.String,
-                    Value = type
+                    Value = secret["SecretType"].Value<string>()
                 });
-                cmd.Parameters.Add(new MySqlParameter
+                cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@content",
+                    ParameterName = "@password",
                     DbType = DbType.String,
-                    Value = secret
+                    Value = secret["Password"].Value<string>()
                 });
-                cmd.Parameters.Add(new MySqlParameter
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
-                    DbType = DbType.String,
+                    DbType = DbType.Int32,
                     Value = id
                 });
 
@@ -135,11 +141,11 @@ namespace Secrets.Controllers
 
         private void DeleteSecret(int id)
         {
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"DELETE FROM `Secrets` WHERE id = @id;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"DELETE FROM `Secrets` WHERE SecretID = @id;", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
                     DbType = DbType.Int64,
@@ -158,10 +164,10 @@ namespace Secrets.Controllers
         {
             var list = new List<Secret>();
 
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand("SELECT * FROM Secrets;", conn);
+                var cmd = new SqlCommand("SELECT * FROM Secrets;", conn);
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -169,9 +175,9 @@ namespace Secrets.Controllers
                     {
                         list.Add(new Secret()
                         {
-                            Id = Convert.ToInt16(reader["id"]),
-                            Type = reader["type"].ToString(),
-                            Content = reader["content"].ToString(),
+                            SecretID = Convert.ToInt16(reader["SecretID"]),
+                            SecretType = reader["SecretType"].ToString(),
+                            Password = reader["Password"].ToString(),
 
                         });
                     }
@@ -184,11 +190,11 @@ namespace Secrets.Controllers
         {
             var list = new List<Secret>();
 
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"SELECT * FROM Secrets WHERE `type` = @SecretType;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"SELECT * FROM Secrets WHERE `SecretType` = @SecretType;", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@SecretType",
                     DbType = DbType.String,
@@ -201,9 +207,9 @@ namespace Secrets.Controllers
                     {
                         list.Add(new Secret()
                         {
-                            Id = Convert.ToInt16(reader["id"]),
-                            Type = reader["type"].ToString(),
-                            Content = reader["content"].ToString(),
+                            SecretID = Convert.ToInt16(reader["SecretID"]),
+                            SecretType = reader["SecretType"].ToString(),
+                            Password = reader["Password"].ToString(),
 
                         });
                     }
@@ -216,11 +222,11 @@ namespace Secrets.Controllers
         {
             var list = new List<Secret>();
 
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"SELECT * FROM secrets WHERE `id` = @id;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"SELECT * FROM secrets WHERE `SecretID` = @id;", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
                     DbType = DbType.Int32,
@@ -233,9 +239,9 @@ namespace Secrets.Controllers
                     {
                         list.Add(new Secret()
                         {
-                            Id = Convert.ToInt16(reader["id"]),
-                            Type = reader["type"].ToString(),
-                            Content = reader["content"].ToString(),
+                            SecretID = Convert.ToInt16(reader["SecretID"]),
+                            SecretType = reader["SecretType"].ToString(),
+                            Password = reader["Password"].ToString(),
 
                         });
                     }

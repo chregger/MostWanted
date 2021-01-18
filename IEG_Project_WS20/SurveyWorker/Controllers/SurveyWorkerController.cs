@@ -19,10 +19,9 @@ namespace SurveyWorker.Controllers
     [ApiController]
     public class SurveyWorkerController : ControllerBase
     {
-        private string SurveyDBConnectionString = "Server=most-wanted-database.mysql.database.azure.com; Port=3306; Database=surveys; Uid=mostwanted@most-wanted-database; Pwd=start1234@; SslMode=Preferred;";
-        private string ResultDBConnectionString = "Server=most-wanted-database.mysql.database.azure.com; Port=3306; Database=results; Uid=mostwanted@most-wanted-database; Pwd=start1234@; SslMode=Preferred;";
+        private string SurveyDBConnectionString = "Server=tcp:most-wanted.database.windows.net,1433;Initial Catalog=Surveys;Persist Security Info=False;User ID=dbuser;Password=IEG_WS2020;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        private string ResultDBConnectionString = "Server=tcp:most-wanted.database.windows.net,1433;Initial Catalog=Surveys;Persist Security Info=False;User ID=dbuser;Password=IEG_WS2020;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
-        //https://mysqlconnector.net/tutorials/net-core-mvc/
         private readonly Logger _logger;
 
         public SurveyWorkerController()

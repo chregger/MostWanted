@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using Discovery.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -15,7 +15,7 @@ namespace Discovery.Controllers
     [Route("api/[controller]")]
     public class ServiceDiscoveryController : ControllerBase
     {
-        private const string ServiceDbConnectionString = "Server=most-wanted-database.mysql.database.azure.com; Port=3306; Database=services; Uid=mostwanted@most-wanted-database; Pwd=start1234@; SslMode=Preferred;";
+        private const string ServiceDbConnectionString = "Server=tcp:most-wanted.database.windows.net,1433;Initial Catalog=Discovery;Persist Security Info=False;User ID=dbuser;Password=IEG_WS2020;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
         private readonly ILogger<ServiceDiscoveryController> _logger;
 
@@ -49,14 +49,14 @@ namespace Discovery.Controllers
         [HttpPost]
         public void Post([FromBody] JObject value)
         {
-            AddService(value["ID"].Value<string>(), value, value["ServiceType"].Value<string>());
+            AddService(value);
         }
 
         // PUT: api/ServiceDiscovery/1
         [HttpPut("{id}")]
         public void Put(int id, [FromBody] JObject value)
         {
-            UpdateService(value["ID"].Value<string>(), value, value["ServiceType"].Value<string>());
+            UpdateService(id, value);
         }
 
         // DELETE: api/ServiceDiscovery/1
@@ -66,34 +66,32 @@ namespace Discovery.Controllers
             DeleteService(id);
         }
 
-        private void AddService(string id, JObject service, string type)
+        private void AddService(JObject service)
         {
-            var json = JsonConvert.SerializeObject(service, Formatting.Indented);
-            using (var conn = new MySqlConnection(ServiceDbConnectionString))
+            using (var conn = new SqlConnection(ServiceDbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"INSERT INTO `data` (`id`,`Type`,`Content`) 
-                                                        VALUES (@id, @type, @content);", conn);
-                cmd.Parameters.Add(new MySqlParameter
-                {
-                    ParameterName = "@type",
-                    DbType = DbType.String,
-                    Value = type
-                });
-                cmd.Parameters.Add(new MySqlParameter
-                {
-                    ParameterName = "@content",
-                    DbType = DbType.String,
-                    Value = service
-                });
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"INSERT INTO Services (ServiceID,ServiceType,ServiceUri) 
+                                                        VALUES (@id, @type, @uri);", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
                     DbType = DbType.String,
-                    Value = id
+                    Value = service["ServiceID"].Value<string>()
                 });
-
-                Console.WriteLine(json);
+                cmd.Parameters.Add(new SqlParameter
+                {
+                    ParameterName = "@type",
+                    DbType = DbType.String,
+                    Value = service["ServiceType"].Value<string>()
+                });
+                cmd.Parameters.Add(new SqlParameter
+                {
+                    ParameterName = "@uri",
+                    DbType = DbType.String,
+                    Value = service["ServiceUri"].Value<string>()
+                });
+               
                 using (var reader = cmd.ExecuteReader())
                 {
 
@@ -101,34 +99,33 @@ namespace Discovery.Controllers
             }
         }
 
-        private void UpdateService(string id, JObject service, string type)
+        private void UpdateService(int id, JObject service)
         {
-            var json = JsonConvert.SerializeObject(service, Formatting.Indented);
-            using (var conn = new MySqlConnection(ServiceDbConnectionString))
+            using (var conn = new SqlConnection(ServiceDbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"UPDATE `data` (`Type`,`Content`) 
-                                                        VALUES (@type, @content) WHERE id = @id;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"UPDATE Services SET ServiceType = @type, ServiceUri = @uri WHERE ServiceID = @id;", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@type",
                     DbType = DbType.String,
-                    Value = type
+                    Value = service["ServiceType"].Value<string>()
+
                 });
-                cmd.Parameters.Add(new MySqlParameter
+                cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@content",
+                    ParameterName = "@uri",
                     DbType = DbType.String,
-                    Value = service
+                    Value = service["ServiceUri"].Value<string>()
+
                 });
-                cmd.Parameters.Add(new MySqlParameter
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
                     DbType = DbType.String,
                     Value = id
                 });
 
-                Console.WriteLine(json);
                 using (var reader = cmd.ExecuteReader())
                 {
 
@@ -139,11 +136,11 @@ namespace Discovery.Controllers
 
         private void DeleteService(int id)
         {
-            using (var conn = new MySqlConnection(ServiceDbConnectionString))
+            using (var conn = new SqlConnection(ServiceDbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"DELETE FROM `data` WHERE id = @id;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"DELETE FROM Services WHERE ServiceID = @id;", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
                     DbType = DbType.Int64,
@@ -162,10 +159,10 @@ namespace Discovery.Controllers
         {
             var list = new List<Service>();
 
-            using (var conn = new MySqlConnection(ServiceDbConnectionString))
+            using (var conn = new SqlConnection(ServiceDbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand("SELECT * FROM DATA;", conn);
+                var cmd = new SqlCommand("SELECT * FROM Services;", conn);
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -173,9 +170,9 @@ namespace Discovery.Controllers
                     {
                         list.Add(new Service()
                         {
-                            Id = reader["id"].ToString(),
-                            Type = reader["type"].ToString(),
-                            Content = reader["content"].ToString(),
+                            Id = reader["ServiceID"].ToString(),
+                            Type = reader["ServiceType"].ToString(),
+                            Uri = reader["ServiceUri"].ToString(),
 
                         });
                     }
@@ -188,11 +185,11 @@ namespace Discovery.Controllers
         {
             var list = new List<Service>();
 
-            using (var conn = new MySqlConnection(ServiceDbConnectionString))
+            using (var conn = new SqlConnection(ServiceDbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"SELECT * FROM DATA WHERE `type` = @serviceType;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"SELECT * FROM Services WHERE ServiceType = @serviceType;", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@serviceType",
                     DbType = DbType.String,
@@ -205,9 +202,9 @@ namespace Discovery.Controllers
                     {
                         list.Add(new Service()
                         {
-                            Id = reader["id"].ToString(),
-                            Type = reader["type"].ToString(),
-                            Content = reader["content"].ToString(),
+                            Id = reader["ServiceID"].ToString(),
+                            Type = reader["ServiceType"].ToString(),
+                            Uri = reader["ServiceUri"].ToString(),
 
                         });
                     }
@@ -220,11 +217,11 @@ namespace Discovery.Controllers
         {
             var list = new List<Service>();
 
-            using (var conn = new MySqlConnection(ServiceDbConnectionString))
+            using (var conn = new SqlConnection(ServiceDbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"SELECT * FROM DATA WHERE `id` = @id;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"SELECT * FROM Services WHERE ServiceID = @id;", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
                     DbType = DbType.Int32,
@@ -237,9 +234,9 @@ namespace Discovery.Controllers
                     {
                         list.Add(new Service()
                         {
-                            Id = reader["id"].ToString(),
-                            Type = reader["type"].ToString(),
-                            Content = reader["content"].ToString(),
+                            Id = reader["ServiceID"].ToString(),
+                            Type = reader["ServiceType"].ToString(),
+                            Uri = reader["ServiceUri"].ToString(),
 
                         });
                     }

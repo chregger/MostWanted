@@ -2,10 +2,8 @@
 {
     public class Answer
     {
-        public int Id { get; set; }
-
-        public string Type { get; set; }
-
-        public string Content { get; set; }
+        public int AnswerId { get; set; }
+        public int QuestionId { get; set; }
+        public string Answermessage { get; set; }
     }
 }

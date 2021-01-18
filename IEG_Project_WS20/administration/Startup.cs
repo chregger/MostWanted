@@ -44,7 +44,7 @@ namespace Administration
 
             OnStartup();
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseMvc();
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
             //GetDatabasePassword();
@@ -66,7 +66,7 @@ namespace Administration
 
         private void OnStartup()
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://most-wanted-discovery.azurewebsites.net/api/ServiceDiscovery/");
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://mostwanteddiscovery.azurewebsites.net/api/ServiceDiscovery/");
             //var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://localhost:44323/api/ServiceDiscovery");
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "POST";
@@ -75,9 +75,8 @@ namespace Administration
             {
                 var json = new JObject
                 {
-                    ["ID"] = _serviceId, ["ServiceType"] = ServiceType, ["ServiceUri"] = ServiceUri
+                    ["ServiceID"] = _serviceId, ["ServiceType"] = ServiceType, ["ServiceUri"] = ServiceUri
                 };
-                //var json = $"{{\"ID\":\"{serviceId}\",\"ServiceType\":\"{serviceType}\",\"URI\":\"{serviceUri}\"}}";
 
                 streamWriter.Write(json);
             }
@@ -87,8 +86,7 @@ namespace Administration
 
         private void OnShutdown()
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create($"https://most-wanted-discovery.azurewebsites.net/api/ServiceDiscovery/id/" + _serviceId);
-            //var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://localhost:44323/api/ServiceDiscovery");
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create($"https://mostwanteddiscovery.azurewebsites.net/api/ServiceDiscovery/id/" + _serviceId);
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "DELETE";
 

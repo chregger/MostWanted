@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
 using Administration.Models;
 using Logging;
 using Microsoft.AspNetCore.Mvc;
-using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -16,7 +16,7 @@ namespace Administration.Controllers
     [Route("api/[controller]")]
     public class AnswersController : ControllerBase
     {
-        private const string DbConnectionString = "Server=most-wanted-database.mysql.database.azure.com; Port=3306; Database=surveys; Uid=mostwanted@most-wanted-database; Pwd=start1234@; SslMode=Preferred;";
+        private const string DbConnectionString = "Server=tcp:most-wanted.database.windows.net,1433;Initial Catalog=Surveys;Persist Security Info=False;User ID=dbuser;Password=IEG_WS2020;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         private readonly Logger _logger;
 
         public AnswersController()
@@ -32,12 +32,12 @@ namespace Administration.Controllers
             return Ok(GetAllAnswers());
         }
 
-        // GET: api/Answers/Random
-        [HttpGet("{AnswerType}")]
-        public IActionResult GetByType(string answerType)
+        // GET: api/Answers/1
+        [HttpGet("{QuestionID}")]
+        public IActionResult GetAnwersFromQuestion(int id)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            return Ok(GetAllAnswersByType(answerType));
+            return Ok(GetAllAnswersByQuestion(id));
         }
 
         // GET: api/Answers/1
@@ -53,7 +53,7 @@ namespace Administration.Controllers
         public IActionResult Post([FromBody] JObject value)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            AddAnswer(value, value["AnswerType"].Value<string>());
+            AddAnswer(value);
             return Ok();
         }
 
@@ -62,7 +62,7 @@ namespace Administration.Controllers
         public IActionResult Put(int id, [FromBody] JObject value)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            UpdateAnswer(value["ID"].Value<string>(), value, value["AnswerType"].Value<string>());
+            UpdateAnswer(value["ID"].Value<string>(), value);
             return Ok();
         }
 
@@ -75,28 +75,27 @@ namespace Administration.Controllers
             return Ok();
         }
 
-        private void AddAnswer(JObject answer, string type)
+        private void AddAnswer(JObject answer)
         {
-            var json = JsonConvert.SerializeObject(answer, Formatting.Indented);
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"INSERT INTO `answers` (`Type`,`Content`) 
-                                                        VALUES (@type, @content);", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"INSERT INTO `Answers` (`QuestionID`,`Answer`) 
+                                                        VALUES (@questionID, @Answer);", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@type",
-                    DbType = DbType.String,
-                    Value = type
+                    ParameterName = "@questionID",
+                    DbType = DbType.Int32,
+                    Value = answer["QuestionID"].Value<int>()
                 });
-                cmd.Parameters.Add(new MySqlParameter
+                cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@content",
+                    ParameterName = "@Answer",
                     DbType = DbType.String,
-                    Value = answer
+                    Value = answer["Answer"].Value<string>()
                 });
 
-                Console.WriteLine(json);
+                Console.WriteLine(JsonConvert.SerializeObject(answer, Formatting.Indented));
                 using (var reader = cmd.ExecuteReader())
                 {
 
@@ -104,27 +103,29 @@ namespace Administration.Controllers
             }
         }
 
-        private void UpdateAnswer(string id, JObject answer, string type)
+        private void UpdateAnswer(string id, JObject answer)
         {
             var json = JsonConvert.SerializeObject(answer, Formatting.Indented);
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"UPDATE `answers` (`Type`,`Content`) 
-                                                        VALUES (@type, @content) WHERE id = @id;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"UPDATE `Answers` (QuestionID`,`Answer`) 
+                                                        VALUES (@questionID, @answer) WHERE AnswerID = @id;", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@type",
-                    DbType = DbType.String,
-                    Value = type
+                    ParameterName = "@questionID",
+                    DbType = DbType.Int32,
+                    Value = answer["QuestionID"].Value<int>()
+
                 });
-                cmd.Parameters.Add(new MySqlParameter
+                cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@content",
+                    ParameterName = "@answer",
                     DbType = DbType.String,
-                    Value = answer
+                    Value = answer["Answer"].Value<string>()
+
                 });
-                cmd.Parameters.Add(new MySqlParameter
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
                     DbType = DbType.String,
@@ -142,11 +143,11 @@ namespace Administration.Controllers
 
         private void DeleteAnswer(int id)
         {
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"DELETE FROM `answers` WHERE id = @id;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"DELETE FROM `Answers` WHERE AnswerID = @id;", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
                     DbType = DbType.Int64,
@@ -165,10 +166,10 @@ namespace Administration.Controllers
         {
             var list = new List<Answer>();
 
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand("SELECT * FROM answers;", conn);
+                var cmd = new SqlCommand("SELECT * FROM Answers;", conn);
 
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -176,9 +177,9 @@ namespace Administration.Controllers
                     {
                         list.Add(new Answer()
                         {
-                            Id = Convert.ToInt16(reader["id"]),
-                            Type = reader["type"].ToString(),
-                            Content = reader["content"].ToString(),
+                            AnswerId = Convert.ToInt16(reader["AnswerID"]),
+                            QuestionId = Convert.ToInt16(reader["QuestionID"]),
+                            Answermessage = reader["Answer"].ToString(),
 
                         });
                     }
@@ -187,19 +188,19 @@ namespace Administration.Controllers
             return list;
         }
 
-        public List<Answer> GetAllAnswersByType(string answerType)
+        public List<Answer> GetAllAnswersByQuestion(int questionID)
         {
             var list = new List<Answer>();
 
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"SELECT * FROM answers WHERE `type` = @AnswerType;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"SELECT * FROM answers WHERE `QuestionID` = @questionID;", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@AnswerType",
+                    ParameterName = "@questionID",
                     DbType = DbType.String,
-                    Value = answerType,
+                    Value = questionID,
                 });
 
                 using (var reader = cmd.ExecuteReader())
@@ -208,9 +209,9 @@ namespace Administration.Controllers
                     {
                         list.Add(new Answer()
                         {
-                            Id = Convert.ToInt16(reader["id"]),
-                            Type = reader["type"].ToString(),
-                            Content = reader["content"].ToString(),
+                            AnswerId = Convert.ToInt16(reader["AnswerID"]),
+                            QuestionId = Convert.ToInt16(reader["QuestionID"]),
+                            Answermessage = reader["Answer"].ToString(),
 
                         });
                     }
@@ -223,11 +224,11 @@ namespace Administration.Controllers
         {
             var list = new List<Answer>();
 
-            using (var conn = new MySqlConnection(DbConnectionString))
+            using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new MySqlCommand(@"SELECT * FROM answers WHERE `id` = @id;", conn);
-                cmd.Parameters.Add(new MySqlParameter
+                var cmd = new SqlCommand(@"SELECT * FROM answers WHERE `AnswerID` = @id;", conn);
+                cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
                     DbType = DbType.Int32,
@@ -240,9 +241,9 @@ namespace Administration.Controllers
                     {
                         list.Add(new Answer()
                         {
-                            Id = Convert.ToInt16(reader["id"]),
-                            Type = reader["type"].ToString(),
-                            Content = reader["content"].ToString(),
+                            AnswerId = Convert.ToInt16(reader["AnswerID"]),
+                            QuestionId = Convert.ToInt16(reader["QuestionID"]),
+                            Answermessage = reader["Answer"].ToString(),
 
                         });
                     }
