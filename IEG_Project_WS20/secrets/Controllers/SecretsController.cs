@@ -70,11 +70,10 @@ namespace Secrets.Controllers
 
         private void AddSecret(JObject secret)
         {
-            var json = JsonConvert.SerializeObject(secret, Formatting.Indented);
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"INSERT INTO `Secrets` (`SecretID`, `SecretType`,`Password`) 
+                var cmd = new SqlCommand(@"INSERT INTO Secrets (SecretID, SecretType,Password) 
                                                         VALUES (@id, @type, @password);", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
@@ -95,7 +94,6 @@ namespace Secrets.Controllers
                     Value = secret["SecretID"].Value<string>()
                 });
 
-                Console.WriteLine(json);
                 using (var reader = cmd.ExecuteReader())
                 {
 
@@ -105,12 +103,10 @@ namespace Secrets.Controllers
 
         private void UpdateSecret(int id, JObject secret)
         {
-            var json = JsonConvert.SerializeObject(secret, Formatting.Indented);
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"UPDATE `Secrets` (`SecretType`,`Password`) 
-                                                        VALUES (@type, @password) WHERE SecretID = @id;", conn);
+                var cmd = new SqlCommand(@"UPDATE Secrets SET SecretType = @type, Password = @password WHERE SecretID = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@type",
@@ -130,7 +126,6 @@ namespace Secrets.Controllers
                     Value = id
                 });
 
-                Console.WriteLine(json);
                 using (var reader = cmd.ExecuteReader())
                 {
 
@@ -144,7 +139,7 @@ namespace Secrets.Controllers
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"DELETE FROM `Secrets` WHERE SecretID = @id;", conn);
+                var cmd = new SqlCommand(@"DELETE FROM Secrets WHERE SecretID = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
@@ -193,7 +188,7 @@ namespace Secrets.Controllers
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"SELECT * FROM Secrets WHERE `SecretType` = @SecretType;", conn);
+                var cmd = new SqlCommand(@"SELECT * FROM Secrets WHERE SecretType = @SecretType;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@SecretType",
@@ -225,7 +220,7 @@ namespace Secrets.Controllers
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"SELECT * FROM secrets WHERE `SecretID` = @id;", conn);
+                var cmd = new SqlCommand(@"SELECT * FROM secrets WHERE SecretID = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
