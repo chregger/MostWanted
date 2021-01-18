@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Reflection;
+﻿using Logging;
 using Microsoft.AspNetCore.Mvc;
-using Logging;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Secrets.Models;
+using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Reflection;
 
 namespace Secrets.Controllers
 {

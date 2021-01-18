@@ -1,15 +1,13 @@
-﻿using System;
+﻿using Administration.Models;
+using Logging;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
-using Administration.Models;
-using Logging;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Administration.Controllers
 {
@@ -24,7 +22,7 @@ namespace Administration.Controllers
         {
             _logger = new Logger(typeof(SurveysController).FullName);
         }
-        
+
         // GET: api/Surveys
         [HttpGet]
         public IActionResult Get()
@@ -80,7 +78,7 @@ namespace Administration.Controllers
                 conn.Open();
                 var cmd = new SqlCommand(@"INSERT INTO Surveys (SurveyName) 
                                                         VALUES (@name);", conn);
-                
+
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@name",
@@ -100,7 +98,7 @@ namespace Administration.Controllers
             {
                 conn.Open();
                 var cmd = new SqlCommand(@"UPDATE surveys SET SurveyName = @name WHERE id = @id;", conn);
-                
+
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@name",

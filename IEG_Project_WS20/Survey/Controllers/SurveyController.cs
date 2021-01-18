@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Logging;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.IO;
 using System.Net;
 using System.Reflection;
-using Logging;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Survey.Controllers
 {
@@ -114,7 +114,7 @@ namespace Survey.Controllers
             //httpWebRequest.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
 
             var content = string.Empty;
-            
+
             using (var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse())
             {
                 using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))

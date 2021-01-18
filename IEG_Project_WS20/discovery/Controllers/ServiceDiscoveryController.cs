@@ -1,13 +1,11 @@
-﻿using System;
+﻿using Discovery.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using Discovery.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Discovery.Controllers
 {
@@ -91,7 +89,7 @@ namespace Discovery.Controllers
                     DbType = DbType.String,
                     Value = service["ServiceUri"].Value<string>()
                 });
-               
+
                 using (var reader = cmd.ExecuteReader())
                 {
 

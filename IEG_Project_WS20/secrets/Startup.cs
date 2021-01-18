@@ -1,12 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Net;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
+using System;
+using System.IO;
+using System.Net;
 
 namespace Secrets
 {

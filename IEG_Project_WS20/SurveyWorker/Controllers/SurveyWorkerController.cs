@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Logging;
+﻿using Logging;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Protocols;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using SurveyWorker.Model;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Reflection;
 
 namespace SurveyWorker.Controllers
 {
@@ -28,7 +23,7 @@ namespace SurveyWorker.Controllers
         {
             _logger = new Logger(typeof(SurveyWorkerController).FullName);
         }
-        
+
         // GET api/values
         [HttpGet]
         public ActionResult<IEnumerable<Survey>> Get()
@@ -71,7 +66,7 @@ namespace SurveyWorker.Controllers
                             Id = Convert.ToInt32(reader["id"]),
                             Type = reader["type"].ToString(),
                             Content = reader["content"].ToString(),
-                           
+
                         });
                     }
                 }
