@@ -97,7 +97,7 @@ namespace Administration.Controllers
             using (var conn = new SqlConnection(SurveyDbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"UPDATE surveys SET SurveyName = @name WHERE id = @id;", conn);
+                var cmd = new SqlCommand(@"UPDATE surveys SET SurveyName = @name WHERE SurveyID = @id;", conn);
 
                 cmd.Parameters.Add(new SqlParameter
                 {
@@ -124,7 +124,7 @@ namespace Administration.Controllers
             using (var conn = new SqlConnection(SurveyDbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"DELETE FROM surveys WHERE id = @id;", conn);
+                var cmd = new SqlCommand(@"DELETE FROM surveys WHERE SurveyID = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
@@ -201,7 +201,7 @@ namespace Administration.Controllers
             using (var conn = new SqlConnection(SurveyDbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"SELECT * FROM surveys WHERE id = @id;", conn);
+                var cmd = new SqlCommand(@"SELECT * FROM surveys WHERE SurveyID = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",

@@ -85,7 +85,7 @@ namespace Administration
 
         private void OnShutdown()
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create($"https://mostwanteddiscovery.azurewebsites.net/api/ServiceDiscovery/id/" + _serviceId);
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create($"https://mostwanteddiscovery.azurewebsites.net/api/ServiceDiscovery/" + _serviceId);
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "DELETE";
 

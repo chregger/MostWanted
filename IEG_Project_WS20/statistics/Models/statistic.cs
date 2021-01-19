@@ -2,11 +2,11 @@
 {
     public class Statistic
     {
+        public int ResultID { get; set; }
+        public int SurveyID { get; set; }
 
-        public int Id { get; set; }
+        public int QuestionID { get; set; }
 
-        public string Type { get; set; }
-
-        public string Content { get; set; }
+        public int AnswerID { get; set; }
     }
 }

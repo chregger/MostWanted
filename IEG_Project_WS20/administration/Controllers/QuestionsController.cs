@@ -107,7 +107,7 @@ namespace Administration.Controllers
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"UPDATE Questions SET SurveyID = @surveyID, Question = @question WHERE id = @id;", conn);
+                var cmd = new SqlCommand(@"UPDATE Questions SET SurveyID = @surveyID, Question = @question WHERE QuestionID = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@surveyID",
@@ -143,7 +143,7 @@ namespace Administration.Controllers
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"DELETE FROM Questions WHERE id = @id;", conn);
+                var cmd = new SqlCommand(@"DELETE FROM Questions WHERE QuestionID = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
