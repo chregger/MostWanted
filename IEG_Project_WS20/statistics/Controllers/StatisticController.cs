@@ -34,10 +34,10 @@ namespace Statistics.Controllers
 
         // GET: api/statistics/Random
         [HttpGet("survey/{statisticType}")]
-        public IActionResult Get(int surveyid)
+        public IActionResult Get(string surveyname)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            return Ok(GetAllResultsFromSurvey(surveyid));
+            return Ok(GetAllResultsFromSurvey(surveyname));
         }
 
         // GET: api/statistics/1
@@ -74,25 +74,25 @@ namespace Statistics.Controllers
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"INSERT INTO Results (SurveyID, QuestionID, AnswerID) 
-                                                        VALUES (@surveyid, @questionid, @answerid);", conn);
+                var cmd = new SqlCommand(@"INSERT INTO Results (SurveyName, Question, Answer) 
+                                                        VALUES (@surveyname, @question, @answer);", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@surveyid",
-                    DbType = DbType.Int32,
-                    Value = result["SurveyID"].Value<int>()
+                    ParameterName = "@surveyname",
+                    DbType = DbType.String,
+                    Value = result["SurveyName"].Value<string>()
                 });
                 cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@questionid",
-                    DbType = DbType.Int32,
-                    Value = result["QuestionID"].Value<int>()
+                    ParameterName = "@question",
+                    DbType = DbType.String,
+                    Value = result["Question"].Value<string>()
                 });
                 cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@answerid",
-                    DbType = DbType.Int32,
-                    Value = result["AnswerID"].Value<int>()
+                    ParameterName = "@answer",
+                    DbType = DbType.String,
+                    Value = result["Answer"].Value<string>()
                 });
 
                 using (var reader = cmd.ExecuteReader())
@@ -108,25 +108,25 @@ namespace Statistics.Controllers
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"UPDATE Results SET SurveyID = @surveyid, QuestionID = @questionid, AnswerID = @answerid
+                var cmd = new SqlCommand(@"UPDATE Results SET SurveyName = @surveyname, Question = @question, Answer = @answer
                                                         WHERE ResultID = @id;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@surveyid",
-                    DbType = DbType.Int32,
-                    Value = result["SurveyID"].Value<int>()
+                    ParameterName = "@surveyname",
+                    DbType = DbType.String,
+                    Value = result["SurveyName"].Value<string>()
                 });
                 cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@questionid",
-                    DbType = DbType.Int32,
-                    Value = result["QuestionID"].Value<int>()
+                    ParameterName = "@question",
+                    DbType = DbType.String,
+                    Value = result["Question"].Value<string>()
                 });
                 cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@answerid",
-                    DbType = DbType.Int32,
-                    Value = result["AnswerID"].Value<int>()
+                    ParameterName = "@answer",
+                    DbType = DbType.String,
+                    Value = result["Answer"].Value<string>()
                 });
                 cmd.Parameters.Add(new SqlParameter
                 {
@@ -181,9 +181,9 @@ namespace Statistics.Controllers
                         list.Add(new Statistic()
                         {
                             ResultID = Convert.ToInt16(reader["ResultID"]),
-                            SurveyID = Convert.ToInt16(reader["SurveyID"]),
-                            QuestionID = Convert.ToInt16(reader["QuestionID"]),
-                            AnswerID = Convert.ToInt16(reader["AnswerID"]),
+                            SurveyName = reader["SurveyName"].ToString(),
+                            Question = reader["Question"].ToString(),
+                            Answer = reader["Answer"].ToString(),
                         });
                     }
                 }
@@ -191,19 +191,19 @@ namespace Statistics.Controllers
             return list;
         }
 
-        public List<Statistic> GetAllResultsFromSurvey(int surveyid)
+        public List<Statistic> GetAllResultsFromSurvey(string surveyname)
         {
             var list = new List<Statistic>();
 
             using (var conn = new SqlConnection(DbConnectionString))
             {
                 conn.Open();
-                var cmd = new SqlCommand(@"SELECT * FROM Results WHERE SurveyID = @surveyid;", conn);
+                var cmd = new SqlCommand(@"SELECT * FROM Results WHERE SurveyName = @surveyname;", conn);
                 cmd.Parameters.Add(new SqlParameter
                 {
-                    ParameterName = "@surveyid",
-                    DbType = DbType.Int32,
-                    Value = surveyid,
+                    ParameterName = "@surveyname",
+                    DbType = DbType.String,
+                    Value = surveyname,
                 });
 
                 using (var reader = cmd.ExecuteReader())
@@ -213,9 +213,9 @@ namespace Statistics.Controllers
                         list.Add(new Statistic()
                         {
                             ResultID = Convert.ToInt16(reader["ResultID"]),
-                            SurveyID = Convert.ToInt16(reader["SurveyID"]),
-                            QuestionID = Convert.ToInt16(reader["QuestionID"]),
-                            AnswerID = Convert.ToInt16(reader["AnswerID"]),
+                            SurveyName = reader["SurveyName"].ToString(),
+                            Question = reader["Question"].ToString(),
+                            Answer = reader["Answer"].ToString(),
                         });
                     }
                 }
@@ -245,9 +245,9 @@ namespace Statistics.Controllers
                         list.Add(new Statistic()
                         {
                             ResultID = Convert.ToInt16(reader["ResultID"]),
-                            SurveyID = Convert.ToInt16(reader["SurveyID"]),
-                            QuestionID = Convert.ToInt16(reader["QuestionID"]),
-                            AnswerID = Convert.ToInt16(reader["AnswerID"]),
+                            SurveyName = reader["SurveyName"].ToString(),
+                            Question = reader["Question"].ToString(),
+                            Answer = reader["Answer"].ToString(),
                         });
                     }
                 }
