@@ -135,7 +135,6 @@ namespace Administration.Controllers
 
                 }
             }
-
         }
 
         private static void DeleteQuestion(int id)
@@ -156,7 +155,6 @@ namespace Administration.Controllers
 
                 }
             }
-
         }
 
         public List<Question> GetAllQuestions()
@@ -175,8 +173,8 @@ namespace Administration.Controllers
                         list.Add(new Question
                         {
                             QuestionId = Convert.ToInt16(reader["QuestionID"]),
-                            SurveyID = Convert.ToInt16(reader["SurveyID"]),
-                            Questiontext = reader["Question"].ToString(),
+                            SurveyId = Convert.ToInt16(reader["SurveyID"]),
+                            QuestionText = reader["Question"].ToString(),
                         });
                     }
                 }
@@ -184,7 +182,7 @@ namespace Administration.Controllers
             return list;
         }
 
-        public List<Question> GetAllQuestionsBySurvey(int surveyID)
+        public List<Question> GetAllQuestionsBySurvey(int surveyId)
         {
             var list = new List<Question>();
 
@@ -196,18 +194,18 @@ namespace Administration.Controllers
                 {
                     ParameterName = "@surveyid",
                     DbType = DbType.Int32,
-                    Value = surveyID,
+                    Value = surveyId,
                 });
 
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Question()
+                        list.Add(new Question
                         {
                             QuestionId = Convert.ToInt16(reader["QuestionID"]),
-                            SurveyID = Convert.ToInt16(reader["SurveyID"]),
-                            Questiontext = reader["Question"].ToString(),
+                            SurveyId = Convert.ToInt16(reader["SurveyID"]),
+                            QuestionText = reader["Question"].ToString(),
                         });
                     }
                 }
@@ -234,11 +232,11 @@ namespace Administration.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Question()
+                        list.Add(new Question
                         {
                             QuestionId = Convert.ToInt16(reader["QuestionID"]),
-                            SurveyID = Convert.ToInt16(reader["SurveyID"]),
-                            Questiontext = reader["Question"].ToString(),
+                            SurveyId = Convert.ToInt16(reader["SurveyID"]),
+                            QuestionText = reader["Question"].ToString(),
 
                         });
                     }
