@@ -2,7 +2,8 @@
 {
     public class Statistic
     {
-        public int ResultID { get; set; }
+        public int ResultId { get; set; }
+
         public string SurveyName { get; set; }
 
         public string Question { get; set; }

@@ -16,6 +16,7 @@ namespace Administration.Controllers
     public class AnswersController : ControllerBase
     {
         private const string DbConnectionString = "Server=tcp:most-wanted.database.windows.net,1433;Initial Catalog=Surveys;Persist Security Info=False;User ID=dbuser;Password=IEG_WS2020;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+
         private readonly Logger _logger;
 
         public AnswersController()
@@ -33,7 +34,7 @@ namespace Administration.Controllers
 
         // GET: api/Answers/1
         [HttpGet("{QuestionID}")]
-        public IActionResult GetAnwersFromQuestion(int id)
+        public IActionResult GetAnswersFromQuestion(int id)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
             return Ok(GetAllAnswersByQuestion(id));
@@ -74,7 +75,7 @@ namespace Administration.Controllers
             return Ok();
         }
 
-        private void AddAnswer(JObject answer)
+        private static void AddAnswer(JObject answer)
         {
             using (var conn = new SqlConnection(DbConnectionString))
             {
@@ -101,7 +102,7 @@ namespace Administration.Controllers
             }
         }
 
-        private void UpdateAnswer(string id, JObject answer)
+        private static void UpdateAnswer(string id, JObject answer)
         {
             using (var conn = new SqlConnection(DbConnectionString))
             {
@@ -136,7 +137,7 @@ namespace Administration.Controllers
 
         }
 
-        private void DeleteAnswer(int id)
+        private static void DeleteAnswer(int id)
         {
             using (var conn = new SqlConnection(DbConnectionString))
             {
@@ -170,11 +171,11 @@ namespace Administration.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Answer()
+                        list.Add(new Answer
                         {
                             AnswerId = Convert.ToInt16(reader["AnswerID"]),
                             QuestionId = Convert.ToInt16(reader["QuestionID"]),
-                            Answertext = reader["Answer"].ToString(),
+                            AnswerText = reader["Answer"].ToString(),
 
                         });
                     }
@@ -183,7 +184,7 @@ namespace Administration.Controllers
             return list;
         }
 
-        public List<Answer> GetAllAnswersByQuestion(int questionID)
+        public List<Answer> GetAllAnswersByQuestion(int questionId)
         {
             var list = new List<Answer>();
 
@@ -195,18 +196,18 @@ namespace Administration.Controllers
                 {
                     ParameterName = "@questionID",
                     DbType = DbType.String,
-                    Value = questionID,
+                    Value = questionId,
                 });
 
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Answer()
+                        list.Add(new Answer
                         {
                             AnswerId = Convert.ToInt16(reader["AnswerID"]),
                             QuestionId = Convert.ToInt16(reader["QuestionID"]),
-                            Answertext = reader["Answer"].ToString(),
+                            AnswerText = reader["Answer"].ToString(),
 
                         });
                     }
@@ -234,11 +235,11 @@ namespace Administration.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Answer()
+                        list.Add(new Answer
                         {
                             AnswerId = Convert.ToInt16(reader["AnswerID"]),
                             QuestionId = Convert.ToInt16(reader["QuestionID"]),
-                            Answertext = reader["Answer"].ToString(),
+                            AnswerText = reader["Answer"].ToString(),
 
                         });
                     }

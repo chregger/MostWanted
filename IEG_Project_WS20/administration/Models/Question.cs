@@ -4,8 +4,8 @@
     {
         public int QuestionId { get; set; }
 
-        public string Questiontext { get; set; }
+        public string QuestionText { get; set; }
 
-        public int SurveyID { get; set; }
+        public int SurveyId { get; set; }
     }
 }

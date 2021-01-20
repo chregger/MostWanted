@@ -14,8 +14,8 @@ namespace SurveyWorker.Controllers
     [ApiController]
     public class SurveyWorkerController : ControllerBase
     {
-        private string SurveyDBConnectionString = "Server=tcp:most-wanted.database.windows.net,1433;Initial Catalog=Surveys;Persist Security Info=False;User ID=dbuser;Password=IEG_WS2020;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
-        private string ResultDBConnectionString = "Server=tcp:most-wanted.database.windows.net,1433;Initial Catalog=Surveys;Persist Security Info=False;User ID=dbuser;Password=IEG_WS2020;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        private const string SurveyDbConnectionString = "Server=tcp:most-wanted.database.windows.net,1433;Initial Catalog=Surveys;Persist Security Info=False;User ID=dbuser;Password=IEG_WS2020;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+        private const string ResultDbConnectionString = "Server=tcp:most-wanted.database.windows.net,1433;Initial Catalog=Surveys;Persist Security Info=False;User ID=dbuser;Password=IEG_WS2020;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
 
         private readonly Logger _logger;
 
@@ -52,7 +52,7 @@ namespace SurveyWorker.Controllers
         {
             List<Survey> list = new List<Survey>();
 
-            using (MySqlConnection conn = new MySqlConnection(SurveyDBConnectionString))
+            using (MySqlConnection conn = new MySqlConnection(SurveyDbConnectionString))
             {
                 conn.Open();
                 MySqlCommand cmd = new MySqlCommand("select * from Surveys;", conn);
@@ -78,7 +78,7 @@ namespace SurveyWorker.Controllers
         {
             List<Survey> list = new List<Survey>();
 
-            using (MySqlConnection conn = new MySqlConnection(SurveyDBConnectionString))
+            using (MySqlConnection conn = new MySqlConnection(SurveyDbConnectionString))
             {
                 conn.Open();
                 MySqlCommand cmd = new MySqlCommand(@"select * from Surveys where `type` = @survey;", conn);
@@ -108,7 +108,7 @@ namespace SurveyWorker.Controllers
 
         public void AddResultSurvey(Newtonsoft.Json.Linq.JObject survey, string type)
         {
-            using (MySqlConnection conn = new MySqlConnection(ResultDBConnectionString))
+            using (MySqlConnection conn = new MySqlConnection(ResultDbConnectionString))
             {
                 conn.Open();
                 MySqlCommand cmd = new MySqlCommand(@"INSERT INTO `data` (`Type`,`Content`) 

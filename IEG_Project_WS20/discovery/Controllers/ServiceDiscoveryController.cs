@@ -64,7 +64,7 @@ namespace Discovery.Controllers
             DeleteService(id);
         }
 
-        private void AddService(JObject service)
+        private static void AddService(JObject service)
         {
             using (var conn = new SqlConnection(ServiceDbConnectionString))
             {
@@ -97,7 +97,7 @@ namespace Discovery.Controllers
             }
         }
 
-        private void UpdateService(string id, JObject service)
+        private static void UpdateService(string id, JObject service)
         {
             using (var conn = new SqlConnection(ServiceDbConnectionString))
             {
@@ -132,7 +132,7 @@ namespace Discovery.Controllers
 
         }
 
-        private void DeleteService(string id)
+        private static void DeleteService(string id)
         {
             using (var conn = new SqlConnection(ServiceDbConnectionString))
             {

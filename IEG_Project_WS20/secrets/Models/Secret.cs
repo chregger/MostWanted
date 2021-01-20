@@ -2,7 +2,7 @@
 {
     public class Secret
     {
-        public int SecretID { get; set; }
+        public int SecretId { get; set; }
 
         public string SecretType { get; set; }
 

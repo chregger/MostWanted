@@ -67,7 +67,7 @@ namespace Secrets.Controllers
             DeleteSecret(id);
         }
 
-        private void AddSecret(JObject secret)
+        private static void AddSecret(JObject secret)
         {
             using (var conn = new SqlConnection(DbConnectionString))
             {
@@ -100,7 +100,7 @@ namespace Secrets.Controllers
             }
         }
 
-        private void UpdateSecret(int id, JObject secret)
+        private static void UpdateSecret(int id, JObject secret)
         {
             using (var conn = new SqlConnection(DbConnectionString))
             {
@@ -133,7 +133,7 @@ namespace Secrets.Controllers
 
         }
 
-        private void DeleteSecret(int id)
+        private static void DeleteSecret(int id)
         {
             using (var conn = new SqlConnection(DbConnectionString))
             {
@@ -167,9 +167,9 @@ namespace Secrets.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Secret()
+                        list.Add(new Secret
                         {
-                            SecretID = Convert.ToInt16(reader["SecretID"]),
+                            SecretId = Convert.ToInt16(reader["SecretID"]),
                             SecretType = reader["SecretType"].ToString(),
                             Password = reader["Password"].ToString(),
 
@@ -199,9 +199,9 @@ namespace Secrets.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Secret()
+                        list.Add(new Secret
                         {
-                            SecretID = Convert.ToInt16(reader["SecretID"]),
+                            SecretId = Convert.ToInt16(reader["SecretID"]),
                             SecretType = reader["SecretType"].ToString(),
                             Password = reader["Password"].ToString(),
 
@@ -231,9 +231,9 @@ namespace Secrets.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Secret()
+                        list.Add(new Secret
                         {
-                            SecretID = Convert.ToInt16(reader["SecretID"]),
+                            SecretId = Convert.ToInt16(reader["SecretID"]),
                             SecretType = reader["SecretType"].ToString(),
                             Password = reader["Password"].ToString(),
 

@@ -34,10 +34,10 @@ namespace Statistics.Controllers
 
         // GET: api/statistics/Random
         [HttpGet("survey/{statisticType}")]
-        public IActionResult Get(string surveyname)
+        public IActionResult Get(string surveyName)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            return Ok(GetAllResultsFromSurvey(surveyname));
+            return Ok(GetAllResultsFromSurvey(surveyName));
         }
 
         // GET: api/statistics/1
@@ -102,7 +102,7 @@ namespace Statistics.Controllers
             }
         }
 
-        private void UpdateResult(int id, JObject result)
+        private static void UpdateResult(int id, JObject result)
         {
             var json = JsonConvert.SerializeObject(result, Formatting.Indented);
             using (var conn = new SqlConnection(DbConnectionString))
@@ -144,7 +144,7 @@ namespace Statistics.Controllers
 
         }
 
-        private void DeleteResult(int id)
+        private static void DeleteResult(int id)
         {
             using (var conn = new SqlConnection(DbConnectionString))
             {
@@ -180,7 +180,7 @@ namespace Statistics.Controllers
                     {
                         list.Add(new Statistic()
                         {
-                            ResultID = Convert.ToInt16(reader["ResultID"]),
+                            ResultId = Convert.ToInt16(reader["ResultID"]),
                             SurveyName = reader["SurveyName"].ToString(),
                             Question = reader["Question"].ToString(),
                             Answer = reader["Answer"].ToString(),
@@ -191,7 +191,7 @@ namespace Statistics.Controllers
             return list;
         }
 
-        public List<Statistic> GetAllResultsFromSurvey(string surveyname)
+        public static List<Statistic> GetAllResultsFromSurvey(string surveyname)
         {
             var list = new List<Statistic>();
 
@@ -210,9 +210,9 @@ namespace Statistics.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Statistic()
+                        list.Add(new Statistic
                         {
-                            ResultID = Convert.ToInt16(reader["ResultID"]),
+                            ResultId = Convert.ToInt16(reader["ResultID"]),
                             SurveyName = reader["SurveyName"].ToString(),
                             Question = reader["Question"].ToString(),
                             Answer = reader["Answer"].ToString(),
@@ -244,7 +244,7 @@ namespace Statistics.Controllers
                     {
                         list.Add(new Statistic()
                         {
-                            ResultID = Convert.ToInt16(reader["ResultID"]),
+                            ResultId = Convert.ToInt16(reader["ResultID"]),
                             SurveyName = reader["SurveyName"].ToString(),
                             Question = reader["Question"].ToString(),
                             Answer = reader["Answer"].ToString(),

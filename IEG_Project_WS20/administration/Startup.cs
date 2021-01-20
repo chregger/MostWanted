@@ -12,7 +12,6 @@ namespace Administration
 {
     public class Startup
     {
-        private string _databasePassword = "";
         private readonly Guid _serviceId = Guid.NewGuid();
         private const string ServiceType = "Administration";
         private const string ServiceUri = "";

@@ -15,10 +15,10 @@ namespace Survey.Controllers
 
         //private const int MAX_RETRIES = 2;
         private const int SERVICES = 1;
-        private int CURRENT_SERVICE = 0;
-        private const string URL_BASE_1 = "http://surveyworker";
-        private const string URL_BASE_2 = ".azurewebsites.net/api/AcceptedCreditCards";
-        private string currentUrl = "http://surveyworker0.azurewebsites.net/api/AcceptedCreditCards";
+        private int _currentService = 0;
+        private const string UrlBase1 = "http://surveyworker";
+        private const string UrlBase2 = ".azurewebsites.net/api/AcceptedCreditCards";
+        private string _currentUrl = "http://surveyworker0.azurewebsites.net/api/AcceptedCreditCards";
         //private int RETRY = 0;
         private readonly Logger _logger;
 
@@ -32,7 +32,7 @@ namespace Survey.Controllers
         public ActionResult<string> Get()
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            return GetCall(currentUrl, "");
+            return GetCall(_currentUrl, "");
         }
 
         // GET api/values/5
@@ -40,15 +40,15 @@ namespace Survey.Controllers
         public ActionResult<string> Get(String survey)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            return GetCall(currentUrl, "/" + survey);
+            return GetCall(_currentUrl, "/" + survey);
         }
 
         // POST api/values
         [HttpPost("{type}")]
-        public void Post(String type, [FromBody] string value)
+        public void Post(string type, [FromBody] string value)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            PostCall(currentUrl, value, type);
+            PostCall(_currentUrl, value, type);
         }
 
         private void PostCall(string url, string value, string type)
@@ -59,16 +59,16 @@ namespace Survey.Controllers
             }
             catch
             {
-                if (CURRENT_SERVICE == SERVICES)
+                if (_currentService == SERVICES)
                 {
-                    CURRENT_SERVICE = 1;
+                    _currentService = 1;
                 }
                 else
                 {
-                    CURRENT_SERVICE++;
+                    _currentService++;
                 }
-                currentUrl = URL_BASE_1 + CURRENT_SERVICE + URL_BASE_2;
-                PostCall(currentUrl, value, type);
+                _currentUrl = UrlBase1 + _currentService + UrlBase2;
+                PostCall(_currentUrl, value, type);
             }
         }
 
@@ -80,21 +80,21 @@ namespace Survey.Controllers
             }
             catch
             {
-                if (CURRENT_SERVICE == SERVICES)
+                if (_currentService == SERVICES)
                 {
-                    CURRENT_SERVICE = 1;
+                    _currentService = 1;
                 }
                 else
                 {
-                    CURRENT_SERVICE++;
+                    _currentService++;
                 }
-                currentUrl = URL_BASE_1 + CURRENT_SERVICE + URL_BASE_2;
-                return RestCall(currentUrl, type);
+                _currentUrl = UrlBase1 + _currentService + UrlBase2;
+                return RestCall(_currentUrl, type);
             }
         }
 
 
-        private void RestCallPost(string url, string value)
+        private static void RestCallPost(string url, string value)
         {
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
             httpWebRequest.ContentType = "application/json";
@@ -106,7 +106,7 @@ namespace Survey.Controllers
             }
         }
 
-        private string RestCall(string url, string type)
+        private static string RestCall(string url, string type)
         {
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(url + type);
             httpWebRequest.ContentType = "application/json";

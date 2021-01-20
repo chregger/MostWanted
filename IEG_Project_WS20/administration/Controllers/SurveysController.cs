@@ -71,7 +71,7 @@ namespace Administration.Controllers
             DeleteSurvey(id);
         }
 
-        private void AddSurvey(JObject survey)
+        private static void AddSurvey(JObject survey)
         {
             using (var conn = new SqlConnection(SurveyDbConnectionString))
             {
@@ -92,7 +92,7 @@ namespace Administration.Controllers
             }
         }
 
-        private void UpdateSurvey(int id, JObject survey)
+        private static void UpdateSurvey(int id, JObject survey)
         {
             using (var conn = new SqlConnection(SurveyDbConnectionString))
             {
@@ -116,10 +116,9 @@ namespace Administration.Controllers
 
                 }
             }
-
         }
 
-        private void DeleteSurvey(int id)
+        private static void DeleteSurvey(int id)
         {
             using (var conn = new SqlConnection(SurveyDbConnectionString))
             {
@@ -137,7 +136,6 @@ namespace Administration.Controllers
 
                 }
             }
-
         }
 
         public List<Survey> GetAllSurveys()
@@ -161,10 +159,11 @@ namespace Administration.Controllers
                     }
                 }
             }
+
             return list;
         }
 
-        public List<Survey> GetAllSurveysByName(string surveyname)
+        public List<Survey> GetAllSurveysByName(string surveyName)
         {
             var list = new List<Survey>();
 
@@ -176,7 +175,7 @@ namespace Administration.Controllers
                 {
                     ParameterName = "@SurveyName",
                     DbType = DbType.String,
-                    Value = surveyname
+                    Value = surveyName
                 });
 
                 using (var reader = cmd.ExecuteReader())
@@ -191,6 +190,7 @@ namespace Administration.Controllers
                     }
                 }
             }
+
             return list;
         }
 
@@ -221,6 +221,7 @@ namespace Administration.Controllers
                     }
                 }
             }
+
             return list.FirstOrDefault();
         }
     }

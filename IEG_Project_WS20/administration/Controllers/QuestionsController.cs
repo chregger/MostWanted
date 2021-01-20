@@ -34,10 +34,10 @@ namespace Administration.Controllers
 
         // GET: api/Survey/Random
         [HttpGet("Survey/{SurveyID}")]
-        public IActionResult GetQuestionsFromSurvey(int SurveyID)
+        public IActionResult GetQuestionsFromSurvey(int surveyId)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            return Ok(GetQuestionsFromSurvey(SurveyID));
+            return Ok(GetQuestionsFromSurvey(surveyId));
         }
 
         // GET: api/Questions/1
@@ -72,7 +72,7 @@ namespace Administration.Controllers
             DeleteQuestion(id);
         }
 
-        private void AddQuestion(JObject question)
+        private static void AddQuestion(JObject question)
         {
             var json = JsonConvert.SerializeObject(question, Formatting.Indented);
             using (var conn = new SqlConnection(DbConnectionString))
@@ -101,7 +101,7 @@ namespace Administration.Controllers
             }
         }
 
-        private void UpdateQuestion(int id, JObject question)
+        private static void UpdateQuestion(int id, JObject question)
         {
             var json = JsonConvert.SerializeObject(question, Formatting.Indented);
             using (var conn = new SqlConnection(DbConnectionString))
@@ -138,7 +138,7 @@ namespace Administration.Controllers
 
         }
 
-        private void DeleteQuestion(int id)
+        private static void DeleteQuestion(int id)
         {
             using (var conn = new SqlConnection(DbConnectionString))
             {
@@ -172,7 +172,7 @@ namespace Administration.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Question()
+                        list.Add(new Question
                         {
                             QuestionId = Convert.ToInt16(reader["QuestionID"]),
                             SurveyID = Convert.ToInt16(reader["SurveyID"]),
