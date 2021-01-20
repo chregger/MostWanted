@@ -37,7 +37,7 @@ namespace Survey.Controllers
 
         // GET api/values/5
         [HttpGet("{survey}")]
-        public ActionResult<string> Get(String survey)
+        public ActionResult<string> Get(string survey)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
             return GetCall(_currentUrl, "/" + survey);
@@ -113,7 +113,7 @@ namespace Survey.Controllers
             httpWebRequest.Method = "GET";
             //httpWebRequest.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
 
-            var content = string.Empty;
+            string content;
 
             using (var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse())
             {
