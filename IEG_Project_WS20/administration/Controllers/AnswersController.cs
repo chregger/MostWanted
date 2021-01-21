@@ -28,7 +28,7 @@ namespace Administration.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            _logger.Log(MethodBase.GetCurrentMethod().Name);
+            _logger.Log(MethodBase.GetCurrentMethod()?.Name);
             return Ok(GetAllAnswers());
         }
 
@@ -36,7 +36,7 @@ namespace Administration.Controllers
         [HttpGet("{QuestionID}")]
         public IActionResult GetAnswersFromQuestion(int id)
         {
-            _logger.Log(MethodBase.GetCurrentMethod().Name);
+            _logger.Log(MethodBase.GetCurrentMethod()?.Name);
             return Ok(GetAllAnswersByQuestion(id));
         }
 
@@ -44,7 +44,7 @@ namespace Administration.Controllers
         [HttpGet("id/{id}")]
         public IActionResult GetById(int id)
         {
-            _logger.Log(MethodBase.GetCurrentMethod().Name);
+            _logger.Log(MethodBase.GetCurrentMethod()?.Name);
             return Ok(GetAnswerById(id));
         }
 
@@ -52,7 +52,7 @@ namespace Administration.Controllers
         [HttpPost]
         public IActionResult Post([FromBody] JObject value)
         {
-            _logger.Log(MethodBase.GetCurrentMethod().Name);
+            _logger.Log(MethodBase.GetCurrentMethod()?.Name);
             AddAnswer(value);
             return Ok();
         }
@@ -61,7 +61,7 @@ namespace Administration.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] JObject value)
         {
-            _logger.Log(MethodBase.GetCurrentMethod().Name);
+            _logger.Log(MethodBase.GetCurrentMethod()?.Name);
             UpdateAnswer(value["ID"].Value<string>(), value);
             return Ok();
         }
@@ -70,7 +70,7 @@ namespace Administration.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            _logger.Log(MethodBase.GetCurrentMethod().Name);
+            _logger.Log(MethodBase.GetCurrentMethod()?.Name);
             DeleteAnswer(id);
             return Ok();
         }
@@ -115,6 +115,7 @@ namespace Administration.Controllers
                     Value = answer["QuestionID"].Value<int>()
 
                 });
+
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@answer",
@@ -122,6 +123,7 @@ namespace Administration.Controllers
                     Value = answer["Answer"].Value<string>()
 
                 });
+
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
@@ -134,7 +136,6 @@ namespace Administration.Controllers
 
                 }
             }
-
         }
 
         private static void DeleteAnswer(int id)
@@ -155,7 +156,6 @@ namespace Administration.Controllers
 
                 }
             }
-
         }
 
         public List<Answer> GetAllAnswers()
@@ -181,6 +181,7 @@ namespace Administration.Controllers
                     }
                 }
             }
+
             return list;
         }
 
@@ -213,6 +214,7 @@ namespace Administration.Controllers
                     }
                 }
             }
+
             return list;
         }
 
@@ -245,6 +247,7 @@ namespace Administration.Controllers
                     }
                 }
             }
+
             return list.FirstOrDefault();
         }
     }
