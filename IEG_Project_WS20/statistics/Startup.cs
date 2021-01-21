@@ -26,23 +26,29 @@ namespace Statistics
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1).AddXmlSerializerFormatters();
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Latest).AddXmlSerializerFormatters();
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime applicationLifetime)
+        public void Configure(IApplicationBuilder appBuilder, IHostingEnvironment env, IApplicationLifetime applicationLifetime)
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                appBuilder.UseDeveloperExceptionPage();
             }
             else
             {
-                app.UseHsts();
+                appBuilder.UseHsts();
             }
 
-            app.UseHttpsRedirection();
-            app.UseMvc();
+            appBuilder.UseHttpsRedirection();
+
+            appBuilder.UseSwagger();
+            appBuilder.UseSwaggerUI(c => {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Statistics API V1");
+            });
+            
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
         }
 

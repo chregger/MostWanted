@@ -1,14 +1,14 @@
-﻿using System;
+﻿using Logging;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Statistics.Models;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
-using Logging;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Statistics.Models;
 
 namespace Statistics.Controllers
 {
@@ -36,7 +36,7 @@ namespace Statistics.Controllers
         [HttpGet("survey/{statisticType}")]
         public IActionResult Get(string surveyName)
         {
-            _logger.Log(MethodBase.GetCurrentMethod().Name);
+            _logger.Log(MethodBase.GetCurrentMethod()?.Name);
             return Ok(GetAllResultsFromSurvey(surveyName));
         }
 
@@ -68,7 +68,7 @@ namespace Statistics.Controllers
             DeleteResult(id);
         }
 
-        private void AddResult(JObject result)
+        private static void AddResult(JObject result)
         {
             var json = JsonConvert.SerializeObject(result, Formatting.Indented);
             using (var conn = new SqlConnection(DbConnectionString))
@@ -162,7 +162,6 @@ namespace Statistics.Controllers
 
                 }
             }
-
         }
 
         public List<Statistic> GetAllResults()
@@ -178,7 +177,7 @@ namespace Statistics.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Statistic()
+                        list.Add(new Statistic
                         {
                             ResultId = Convert.ToInt16(reader["ResultID"]),
                             SurveyName = reader["SurveyName"].ToString(),
@@ -188,6 +187,7 @@ namespace Statistics.Controllers
                     }
                 }
             }
+
             return list;
         }
 
@@ -220,6 +220,7 @@ namespace Statistics.Controllers
                     }
                 }
             }
+
             return list;
         }
 
@@ -242,7 +243,7 @@ namespace Statistics.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Statistic()
+                        list.Add(new Statistic
                         {
                             ResultId = Convert.ToInt16(reader["ResultID"]),
                             SurveyName = reader["SurveyName"].ToString(),
@@ -252,6 +253,7 @@ namespace Statistics.Controllers
                     }
                 }
             }
+
             return list.FirstOrDefault();
         }
     }
