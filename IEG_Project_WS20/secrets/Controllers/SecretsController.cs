@@ -156,7 +156,7 @@ namespace Secrets.Controllers
             }
         }
 
-        public List<Secret> GetAllSecrets()
+        private static List<Secret> GetAllSecrets()
         {
             var list = new List<Secret>();
 
@@ -183,7 +183,7 @@ namespace Secrets.Controllers
             return list;
         }
 
-        public List<Secret> GetAllSecretsByType(string secretType)
+        private static List<Secret> GetAllSecretsByType(string secretType)
         {
             var list = new List<Secret>();
 
@@ -216,7 +216,7 @@ namespace Secrets.Controllers
             return list;
         }
 
-        public Secret GetSecretById(int id)
+        private static Secret GetSecretById(int id)
         {
             var list = new List<Secret>();
 

@@ -49,7 +49,7 @@ namespace SurveyWorker.Controllers
             AddResultSurvey(value, type);
         }
 
-        public List<Survey> GetAllSurveyRows()
+        private static List<Survey> GetAllSurveyRows()
         {
             var list = new List<Survey>();
 
@@ -76,7 +76,7 @@ namespace SurveyWorker.Controllers
             return list;
         }
 
-        public List<Survey> GetAllSurveyRowsBySurvey(string survey)
+        private static List<Survey> GetAllSurveyRowsBySurvey(string survey)
         {
             var list = new List<Survey>();
 
@@ -109,7 +109,7 @@ namespace SurveyWorker.Controllers
             return list;
         }
 
-        public void AddResultSurvey(JObject survey, string type)
+        private static void AddResultSurvey(JObject survey, string type)
         {
             using (MySqlConnection conn = new MySqlConnection(ResultDbConnectionString))
             {

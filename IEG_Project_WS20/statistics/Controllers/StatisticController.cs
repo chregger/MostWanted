@@ -164,7 +164,7 @@ namespace Statistics.Controllers
             }
         }
 
-        public List<Statistic> GetAllResults()
+        private static List<Statistic> GetAllResults()
         {
             var list = new List<Statistic>();
 
@@ -191,7 +191,7 @@ namespace Statistics.Controllers
             return list;
         }
 
-        public static List<Statistic> GetAllResultsFromSurvey(string surveyname)
+        private static List<Statistic> GetAllResultsFromSurvey(string surveyname)
         {
             var list = new List<Statistic>();
 
@@ -224,7 +224,7 @@ namespace Statistics.Controllers
             return list;
         }
 
-        public Statistic GetResultsById(int id)
+        private static Statistic GetResultsById(int id)
         {
             var list = new List<Statistic>();
 
