@@ -34,7 +34,7 @@ namespace Secrets.Controllers
         [HttpGet("{SecretType}")]
         public IActionResult Get(string secretType)
         {
-            _logger.Log(MethodBase.GetCurrentMethod().Name);
+            _logger.Log(MethodBase.GetCurrentMethod()?.Name);
             return Ok(GetAllSecretsByType(secretType));
         }
 
@@ -42,7 +42,7 @@ namespace Secrets.Controllers
         [HttpGet("id/{id}")]
         public IActionResult GetById(int id)
         {
-            _logger.Log(MethodBase.GetCurrentMethod().Name);
+            _logger.Log(MethodBase.GetCurrentMethod()?.Name);
             return Ok(GetSecretById(id));
         }
 
@@ -80,12 +80,14 @@ namespace Secrets.Controllers
                     DbType = DbType.String,
                     Value = secret["SecretType"].Value<string>()
                 });
+
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@password",
                     DbType = DbType.String,
                     Value = secret["Password"].Value<string>()
                 });
+
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
@@ -112,12 +114,14 @@ namespace Secrets.Controllers
                     DbType = DbType.String,
                     Value = secret["SecretType"].Value<string>()
                 });
+
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@password",
                     DbType = DbType.String,
                     Value = secret["Password"].Value<string>()
                 });
+
                 cmd.Parameters.Add(new SqlParameter
                 {
                     ParameterName = "@id",
@@ -130,7 +134,6 @@ namespace Secrets.Controllers
 
                 }
             }
-
         }
 
         private static void DeleteSecret(int id)
@@ -151,7 +154,6 @@ namespace Secrets.Controllers
 
                 }
             }
-
         }
 
         public List<Secret> GetAllSecrets()
@@ -177,6 +179,7 @@ namespace Secrets.Controllers
                     }
                 }
             }
+
             return list;
         }
 
@@ -209,6 +212,7 @@ namespace Secrets.Controllers
                     }
                 }
             }
+
             return list;
         }
 
@@ -241,6 +245,7 @@ namespace Secrets.Controllers
                     }
                 }
             }
+
             return list.FirstOrDefault();
         }
     }
