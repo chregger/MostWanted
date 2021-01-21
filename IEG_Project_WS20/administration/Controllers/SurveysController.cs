@@ -138,7 +138,7 @@ namespace Administration.Controllers
             }
         }
 
-        public List<Survey> GetAllSurveys()
+        private static List<Survey> GetAllSurveys()
         {
             var list = new List<Survey>();
 
@@ -151,7 +151,7 @@ namespace Administration.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Survey()
+                        list.Add(new Survey
                         {
                             Id = Convert.ToInt16(reader["SurveyID"]),
                             Name = reader["SurveyName"].ToString()
@@ -163,7 +163,7 @@ namespace Administration.Controllers
             return list;
         }
 
-        public List<Survey> GetAllSurveysByName(string surveyName)
+        private static List<Survey> GetAllSurveysByName(string surveyName)
         {
             var list = new List<Survey>();
 
@@ -182,7 +182,7 @@ namespace Administration.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Survey()
+                        list.Add(new Survey
                         {
                             Id = Convert.ToInt16(reader["SurveyID"]),
                             Name = reader["SurveyName"].ToString()
@@ -194,7 +194,7 @@ namespace Administration.Controllers
             return list;
         }
 
-        public Survey GetSurveyById(int id)
+        private static Survey GetSurveyById(int id)
         {
             var list = new List<Survey>();
 
@@ -213,7 +213,7 @@ namespace Administration.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Survey()
+                        list.Add(new Survey
                         {
                             Id = Convert.ToInt16(reader["SurveyID"]),
                             Name = reader["SurveyName"].ToString(),

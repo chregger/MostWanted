@@ -158,7 +158,7 @@ namespace Administration.Controllers
             }
         }
 
-        public List<Answer> GetAllAnswers()
+        private static List<Answer> GetAllAnswers()
         {
             var list = new List<Answer>();
 
@@ -185,7 +185,7 @@ namespace Administration.Controllers
             return list;
         }
 
-        public List<Answer> GetAllAnswersByQuestion(int questionId)
+        private static List<Answer> GetAllAnswersByQuestion(int questionId)
         {
             var list = new List<Answer>();
 
@@ -218,7 +218,7 @@ namespace Administration.Controllers
             return list;
         }
 
-        public Answer GetAnswerById(int id)
+        private static Answer GetAnswerById(int id)
         {
             var list = new List<Answer>();
 

@@ -157,7 +157,7 @@ namespace Administration.Controllers
             }
         }
 
-        public List<Question> GetAllQuestions()
+        private static List<Question> GetAllQuestions()
         {
             var list = new List<Question>();
 
@@ -179,10 +179,11 @@ namespace Administration.Controllers
                     }
                 }
             }
+
             return list;
         }
 
-        public List<Question> GetAllQuestionsBySurvey(int surveyId)
+        private static List<Question> GetAllQuestionsBySurvey(int surveyId)
         {
             var list = new List<Question>();
 
@@ -210,10 +211,11 @@ namespace Administration.Controllers
                     }
                 }
             }
+
             return list;
         }
 
-        public Question GetQuestionById(int id)
+        private static Question GetQuestionById(int id)
         {
             var list = new List<Question>();
 
@@ -242,6 +244,7 @@ namespace Administration.Controllers
                     }
                 }
             }
+
             return list.FirstOrDefault();
         }
     }
