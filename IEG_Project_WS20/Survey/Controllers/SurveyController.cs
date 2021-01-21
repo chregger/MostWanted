@@ -31,7 +31,7 @@ namespace Survey.Controllers
         [HttpGet]
         public ActionResult<string> Get()
         {
-            _logger.Log(MethodBase.GetCurrentMethod().Name);
+            _logger.Log(MethodBase.GetCurrentMethod()?.Name);
             return GetCall(_currentUrl, "");
         }
 
@@ -39,7 +39,7 @@ namespace Survey.Controllers
         [HttpGet("{survey}")]
         public ActionResult<string> Get(string survey)
         {
-            _logger.Log(MethodBase.GetCurrentMethod().Name);
+            _logger.Log(MethodBase.GetCurrentMethod()?.Name);
             return GetCall(_currentUrl, "/" + survey);
         }
 
@@ -47,7 +47,7 @@ namespace Survey.Controllers
         [HttpPost("{type}")]
         public void Post(string type, [FromBody] string value)
         {
-            _logger.Log(MethodBase.GetCurrentMethod().Name);
+            _logger.Log(MethodBase.GetCurrentMethod()?.Name);
             PostCall(_currentUrl, value, type);
         }
 

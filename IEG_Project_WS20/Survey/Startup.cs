@@ -43,10 +43,12 @@ namespace Survey
             }
 
             appBuilder.UseHttpsRedirection();
+
             appBuilder.UseSwagger();
             appBuilder.UseSwaggerUI(c => {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Survey API V1");
             });
+
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
         }
 
