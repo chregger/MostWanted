@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SurveyWorker.Model;
 using System;
 using System.Collections.Generic;
@@ -28,40 +29,40 @@ namespace SurveyWorker.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<Survey>> Get()
         {
-            _logger.Log(MethodBase.GetCurrentMethod().Name);
+            _logger.Log(MethodBase.GetCurrentMethod()?.Name);
             return GetAllSurveyRows();
         }
 
         // GET api/values/5
         [HttpGet("{survey}")]
-        public ActionResult<IEnumerable<Survey>> Get(String survey)
+        public ActionResult<IEnumerable<Survey>> Get(string survey)
         {
-            _logger.Log(MethodBase.GetCurrentMethod().Name);
+            _logger.Log(MethodBase.GetCurrentMethod()?.Name);
             return GetAllSurveyRowsBySurvey(survey);
         }
 
         // POST api/values
         [HttpPost("{type}")]
-        public void Post([FromBody] Newtonsoft.Json.Linq.JObject value, String type)
+        public void Post([FromBody] JObject value, string type)
         {
-            _logger.Log(MethodBase.GetCurrentMethod().Name);
+            _logger.Log(MethodBase.GetCurrentMethod()?.Name);
             AddResultSurvey(value, type);
         }
 
         public List<Survey> GetAllSurveyRows()
         {
-            List<Survey> list = new List<Survey>();
+            var list = new List<Survey>();
 
             using (MySqlConnection conn = new MySqlConnection(SurveyDbConnectionString))
             {
                 conn.Open();
-                MySqlCommand cmd = new MySqlCommand("select * from Surveys;", conn);
+                var cmd = new MySqlCommand("select * from Surveys;", conn);
 
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Survey()
+                        list.Add(new Survey
                         {
                             Id = Convert.ToInt32(reader["id"]),
                             Type = reader["type"].ToString(),
@@ -71,17 +72,18 @@ namespace SurveyWorker.Controllers
                     }
                 }
             }
+
             return list;
         }
 
-        public List<Survey> GetAllSurveyRowsBySurvey(String survey)
+        public List<Survey> GetAllSurveyRowsBySurvey(string survey)
         {
-            List<Survey> list = new List<Survey>();
+            var list = new List<Survey>();
 
             using (MySqlConnection conn = new MySqlConnection(SurveyDbConnectionString))
             {
                 conn.Open();
-                MySqlCommand cmd = new MySqlCommand(@"select * from Surveys where `type` = @survey;", conn);
+                var cmd = new MySqlCommand(@"select * from Surveys where `type` = @survey;", conn);
                 cmd.Parameters.Add(new MySqlParameter
                 {
                     ParameterName = "@survey",
@@ -93,7 +95,7 @@ namespace SurveyWorker.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Survey()
+                        list.Add(new Survey
                         {
                             Id = Convert.ToInt32(reader["id"]),
                             Type = reader["type"].ToString(),
@@ -103,15 +105,16 @@ namespace SurveyWorker.Controllers
                     }
                 }
             }
+
             return list;
         }
 
-        public void AddResultSurvey(Newtonsoft.Json.Linq.JObject survey, string type)
+        public void AddResultSurvey(JObject survey, string type)
         {
             using (MySqlConnection conn = new MySqlConnection(ResultDbConnectionString))
             {
                 conn.Open();
-                MySqlCommand cmd = new MySqlCommand(@"INSERT INTO `data` (`Type`,`Content`) 
+                var cmd = new MySqlCommand(@"INSERT INTO `data` (`Type`,`Content`) 
                                                         VALUES (@type, @content);", conn);
                 cmd.Parameters.Add(new MySqlParameter
                 {
@@ -119,13 +122,15 @@ namespace SurveyWorker.Controllers
                     DbType = DbType.String,
                     Value = type
                 });
+
                 cmd.Parameters.Add(new MySqlParameter
                 {
                     ParameterName = "@content",
                     DbType = DbType.String,
                     Value = survey
                 });
-                string json = JsonConvert.SerializeObject(survey, Formatting.Indented);
+
+                var json = JsonConvert.SerializeObject(survey, Formatting.Indented);
 
                 Console.WriteLine(json);
                 using (var reader = cmd.ExecuteReader())
@@ -134,48 +139,5 @@ namespace SurveyWorker.Controllers
                 }
             }
         }
-
-        //public void AddResultSurvey(List<SurveyResult> surveyRows)
-        //{
-        //    using (MySqlConnection conn = new MySqlConnection(SurveyDBConnectionString))
-        //    {
-        //        conn.Open();
-        //        foreach (SurveyResult surveyRow in surveyRows)
-        //        {
-        //            MySqlCommand cmd = new MySqlCommand(@"INSERT INTO `SurveyResult` (`Survey`,`Name`,`Content`,`Type`) 
-        //                                                    VALUES (@survey, @name, @content, @type);", conn);
-        //            cmd.Parameters.Add(new MySqlParameter
-        //            {
-        //                ParameterName = "@survey",
-        //                DbType = DbType.String,
-        //                Value = surveyRow.Survey
-        //            });
-        //            cmd.Parameters.Add(new MySqlParameter
-        //            {
-        //                ParameterName = "@name",
-        //                DbType = DbType.String,
-        //                Value = surveyRow.Name
-        //            });
-        //            cmd.Parameters.Add(new MySqlParameter
-        //            {
-        //                ParameterName = "@content",
-        //                DbType = DbType.String,
-        //                Value = surveyRow.Content
-        //            });
-        //            cmd.Parameters.Add(new MySqlParameter
-        //            {
-        //                ParameterName = "@type",
-        //                DbType = DbType.String,
-        //                Value = surveyRow.Type
-        //            });
-
-        //            using (var reader = cmd.ExecuteReader())
-        //            {
-
-        //            }
-        //        }
-        //    }
-        //}
-
     }
 }
