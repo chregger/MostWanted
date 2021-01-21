@@ -20,23 +20,27 @@ namespace Discovery
         {
             services.AddControllers();
             services.AddControllers().AddNewtonsoftJson();
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder appBuilder, IWebHostEnvironment env)
         {
+            appBuilder.UseSwagger();
+            appBuilder.UseSwaggerUI(c => {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Discovery API V1");
+            });
+
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                appBuilder.UseDeveloperExceptionPage();
             }
 
-            //app.UseHttpsRedirection();
+            //appBuilder.UseHttpsRedirection();
 
-            app.UseRouting();
+            appBuilder.UseRouting();
 
-            //app.UseAuthorization();
-
-            app.UseEndpoints(endpoints =>
+            appBuilder.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
