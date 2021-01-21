@@ -129,7 +129,6 @@ namespace Discovery.Controllers
 
                 }
             }
-
         }
 
         private static void DeleteService(string id)
@@ -150,10 +149,9 @@ namespace Discovery.Controllers
 
                 }
             }
-
         }
 
-        public List<Service> GetAllServices()
+        private static List<Service> GetAllServices()
         {
             var list = new List<Service>();
 
@@ -166,7 +164,7 @@ namespace Discovery.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Service()
+                        list.Add(new Service
                         {
                             Id = reader["ServiceID"].ToString(),
                             Type = reader["ServiceType"].ToString(),
@@ -176,10 +174,11 @@ namespace Discovery.Controllers
                     }
                 }
             }
+
             return list;
         }
 
-        public List<Service> GetAllServicesByType(string serviceType)
+        private static List<Service> GetAllServicesByType(string serviceType)
         {
             var list = new List<Service>();
 
@@ -198,7 +197,7 @@ namespace Discovery.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Service()
+                        list.Add(new Service
                         {
                             Id = reader["ServiceID"].ToString(),
                             Type = reader["ServiceType"].ToString(),
@@ -208,10 +207,11 @@ namespace Discovery.Controllers
                     }
                 }
             }
+
             return list;
         }
 
-        public Service GetServiceById(string id)
+        private static Service GetServiceById(string id)
         {
             var list = new List<Service>();
 
@@ -230,7 +230,7 @@ namespace Discovery.Controllers
                 {
                     while (reader.Read())
                     {
-                        list.Add(new Service()
+                        list.Add(new Service
                         {
                             Id = reader["ServiceID"].ToString(),
                             Type = reader["ServiceType"].ToString(),
@@ -240,6 +240,7 @@ namespace Discovery.Controllers
                     }
                 }
             }
+
             return list.FirstOrDefault();
         }
     }
