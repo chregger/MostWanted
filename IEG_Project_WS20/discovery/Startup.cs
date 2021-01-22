@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 
 namespace Discovery
 {
@@ -20,25 +21,27 @@ namespace Discovery
         {
             services.AddControllers();
             services.AddControllers().AddNewtonsoftJson();
-            services.AddSwaggerGen();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Discovery", Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder appBuilder, IWebHostEnvironment env)
         {
-            appBuilder.UseSwagger();
-            appBuilder.UseSwaggerUI(c => {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Discovery API V1");
-            });
-
             if (env.IsDevelopment())
             {
                 appBuilder.UseDeveloperExceptionPage();
+                appBuilder.UseSwagger();
+                appBuilder.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Discovery v1"));
             }
 
-            //appBuilder.UseHttpsRedirection();
+            appBuilder.UseHttpsRedirection();
 
             appBuilder.UseRouting();
+
+            appBuilder.UseAuthorization();
 
             appBuilder.UseEndpoints(endpoints =>
             {
