@@ -16,9 +16,9 @@ namespace Survey.Controllers
         //private const int MAX_RETRIES = 2;
         private const int SERVICES = 1;
         private int CURRENT_SERVICE = 0;
-        private const string URL_BASE_1 = "http://surveyworker";
-        private const string URL_BASE_2 = ".azurewebsites.net/api/AcceptedCreditCards";
-        private string currentUrl = "http://surveyworker0.azurewebsites.net/api/AcceptedCreditCards";
+        private const string URL_BASE_1 = "https://mostwantedsurveyworker";
+        private const string URL_BASE_2 = ".azurewebsites.net/api/SurveyWorker/";
+        private string currentUrl = "https://mostwantedsurveyworker.azurewebsites.net/api/SurveyWorker/";
         //private int RETRY = 0;
         private readonly Logger _logger;
 
@@ -32,7 +32,7 @@ namespace Survey.Controllers
         public ActionResult<string> Get()
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            return GetCall(currentUrl, "");
+            return GetCall(currentUrl);
         }
 
         // GET api/values/5
@@ -40,22 +40,22 @@ namespace Survey.Controllers
         public ActionResult<string> Get(String survey)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            return GetCall(currentUrl, "/" + survey);
+            return GetCall(currentUrl);
         }
 
         // POST api/values
-        [HttpPost("{type}")]
-        public void Post(String type, [FromBody] string value)
+        [HttpPost]
+        public void Post([FromBody] string value)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
-            PostCall(currentUrl, value, type);
+            PostCall(currentUrl, value);
         }
 
-        private void PostCall(string url, string value, string type)
+        private void PostCall(string url, string value)
         {
             try
             {
-                RestCallPost(url + "/" + type, value);
+                RestCallPost(url, value);
             }
             catch
             {
@@ -68,15 +68,15 @@ namespace Survey.Controllers
                     CURRENT_SERVICE++;
                 }
                 currentUrl = URL_BASE_1 + CURRENT_SERVICE + URL_BASE_2;
-                PostCall(currentUrl, value, type);
+                PostCall(currentUrl, value);
             }
         }
 
-        private string GetCall(string url, string type)
+        private string GetCall(string url)
         {
             try
             {
-                return RestCall(url, type);
+                return RestCall(url);
             }
             catch
             {
@@ -89,7 +89,7 @@ namespace Survey.Controllers
                     CURRENT_SERVICE++;
                 }
                 currentUrl = URL_BASE_1 + CURRENT_SERVICE + URL_BASE_2;
-                return RestCall(currentUrl, type);
+                return RestCall(currentUrl);
             }
         }
 
@@ -106,9 +106,9 @@ namespace Survey.Controllers
             }
         }
 
-        private string RestCall(string url, string type)
+        private string RestCall(string url)
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create(url + type);
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "GET";
             //httpWebRequest.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
