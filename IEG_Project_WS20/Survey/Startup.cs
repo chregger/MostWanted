@@ -14,7 +14,7 @@ namespace Survey
     {
         private readonly Guid _serviceId = Guid.NewGuid();
         private const string ServiceType = "Survey";
-        private const string ServiceUri = "";
+        private const string ServiceUri = "https://mostwantedsurvey.azurewebsites.net/";
 
         public Startup(IConfiguration configuration)
         {
@@ -40,7 +40,7 @@ namespace Survey
             {
                 app.UseHsts();
             }
-
+            OnStartup();
             app.UseHttpsRedirection();
             app.UseMvc();
             applicationLifetime.ApplicationStopping.Register(OnShutdown);

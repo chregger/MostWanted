@@ -14,7 +14,7 @@ namespace Secrets
     {
         private readonly Guid _serviceId = Guid.NewGuid();
         private const string ServiceType = "Secrets";
-        private const string ServiceUri = "";
+        private const string ServiceUri = "https://mostwantedsecrets.azurewebsites.net/";
 
         public Startup(IConfiguration configuration)
         {

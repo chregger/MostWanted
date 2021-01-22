@@ -1,5 +1,6 @@
 ﻿using Logging;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
@@ -46,13 +47,13 @@ namespace Survey.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] string value)
+        public void Post([FromBody] JObject value)
         {
             _logger.Log(MethodBase.GetCurrentMethod().Name);
             PostCall(currentUrl, value);
         }
 
-        private void PostCall(string url, string value)
+        private void PostCall(string url, JObject value)
         {
             try
             {
@@ -95,7 +96,7 @@ namespace Survey.Controllers
         }
 
 
-        private void RestCallPost(string url, string value)
+        private void RestCallPost(string url, JObject value)
         {
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
             httpWebRequest.ContentType = "application/json";
@@ -104,20 +105,20 @@ namespace Survey.Controllers
             {
                 var json = new JObject
                 {
-                    ["SurveyName"] = _serviceId,
-                    ["Question"] = ServiceType,
-                    ["Answer"] = ServiceUri
+                    ["SurveyName"] = value["SurveyName"].ToString(),
+                    ["Question"] = value["Question"].ToString(),
+                    ["Answer"] = value["Answer"].ToString()
                 };
 
                 streamWriter.Write(json);
             }
 
-            httpWebRequest.BeginGetResponse(null, null);
-            //var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-            //using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
-            //{
-            //    var result = streamReader.ReadToEnd();
-            //}
+            //httpWebRequest.BeginGetResponse(null, null);
+            var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+            {
+                var result = streamReader.ReadToEnd();
+            }   
         }
 
         private string RestCall(string url)

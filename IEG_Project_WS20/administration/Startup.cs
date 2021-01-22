@@ -15,7 +15,7 @@ namespace Administration
         private string _databasePassword = "";
         private readonly Guid _serviceId = Guid.NewGuid();
         private const string ServiceType = "Administration";
-        private const string ServiceUri = "";
+        private const string ServiceUri = "https://mostwantedadministration.azurewebsites.net/";
 
         public Startup(IConfiguration configuration)
         {
@@ -47,20 +47,19 @@ namespace Administration
             app.UseHttpsRedirection();
             app.UseMvc();
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
-            //GetDatabasePassword();
+            GetDatabasePassword();
         }
 
         private void GetDatabasePassword()
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://most-wanted-secrets.azurewebsites.net/api/Secrets/db_password");
-            //var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://localhost:44323/api/ServiceDiscovery");
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://mostwantedsecrets.azurewebsites.net/api/Secrets");
             httpWebRequest.ContentType = "application/json";
-            httpWebRequest.Method = "DELETE";
+            httpWebRequest.Method = "GET";
             var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
             using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
             {
                 var result = streamReader.ReadToEnd();
-                Console.WriteLine(result);
+                _databasePassword = result;
             }
         }
 

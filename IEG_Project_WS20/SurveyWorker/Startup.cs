@@ -14,7 +14,7 @@ namespace SurveyWorker
     {
         private readonly Guid _serviceId = Guid.NewGuid();
         private const string ServiceType = "Administration";
-        private const string ServiceUri = "";
+        private const string ServiceUri = "https://mostwantedsurveyworker.azurewebsites.net/";
 
         public Startup(IConfiguration configuration)
         {

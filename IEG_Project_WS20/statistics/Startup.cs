@@ -14,7 +14,7 @@ namespace Statistics
     {
         private readonly Guid _serviceId = Guid.NewGuid();
         private const string ServiceType = "Statistics";
-        private const string ServiceUri = "";
+        private const string ServiceUri = "https://mostwantedresults.azurewebsites.net/";
 
         public Startup(IConfiguration configuration)
         {
@@ -40,6 +40,7 @@ namespace Statistics
             {
                 app.UseHsts();
             }
+            OnStartup();
 
             app.UseHttpsRedirection();
             app.UseMvc();

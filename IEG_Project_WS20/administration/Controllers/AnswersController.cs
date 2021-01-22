@@ -23,7 +23,10 @@ namespace Administration.Controllers
             _logger = new Logger(typeof(AnswersController).FullName);
         }
 
-        // GET: api/Answers
+        /// <summary>
+        /// Get all answers
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public IActionResult Get()
         {
@@ -31,7 +34,11 @@ namespace Administration.Controllers
             return Ok(GetAllAnswers());
         }
 
-        // GET: api/Answers/1
+        /// <summary>
+        /// Get answer from a questionid
+        /// </summary>
+        /// <param name="id">ID of foreign key question</param>
+        /// <returns></returns>
         [HttpGet("{QuestionID}")]
         public IActionResult GetAnwersFromQuestion(int id)
         {
@@ -39,7 +46,11 @@ namespace Administration.Controllers
             return Ok(GetAllAnswersByQuestion(id));
         }
 
-        // GET: api/Answers/1
+        /// <summary>
+        /// Get answer by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns>ID of a answer</returns>
         [HttpGet("id/{id}")]
         public IActionResult GetById(int id)
         {
@@ -47,7 +58,12 @@ namespace Administration.Controllers
             return Ok(GetAnswerById(id));
         }
 
-        // POST: api/Answers
+        /// <summary>
+        /// Add new Answer to the database
+        /// Question must be already inserted in the database
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         [HttpPost]
         public IActionResult Post([FromBody] JObject value)
         {
@@ -56,7 +72,12 @@ namespace Administration.Controllers
             return Ok();
         }
 
-        // PUT: api/Answers/1
+        /// <summary>
+        /// Modify a already existing answer in the database
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] JObject value)
         {
@@ -65,7 +86,11 @@ namespace Administration.Controllers
             return Ok();
         }
 
-        // DELETE: api/Answers/1
+        /// <summary>
+        /// Delete an answer
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
@@ -133,7 +158,6 @@ namespace Administration.Controllers
 
                 }
             }
-
         }
 
         private void DeleteAnswer(int id)
@@ -154,7 +178,6 @@ namespace Administration.Controllers
 
                 }
             }
-
         }
 
         public List<Answer> GetAllAnswers()
