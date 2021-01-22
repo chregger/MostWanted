@@ -1,5 +1,6 @@
 ﻿using Logging;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Net;
@@ -99,11 +100,24 @@ namespace Survey.Controllers
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "POST";
-            var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
-            using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+            using (var streamWriter = new StreamWriter(httpWebRequest.GetRequestStream()))
             {
-                var result = streamReader.ReadToEnd();
+                var json = new JObject
+                {
+                    ["SurveyName"] = _serviceId,
+                    ["Question"] = ServiceType,
+                    ["Answer"] = ServiceUri
+                };
+
+                streamWriter.Write(json);
             }
+
+            httpWebRequest.BeginGetResponse(null, null);
+            //var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+            //using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+            //{
+            //    var result = streamReader.ReadToEnd();
+            //}
         }
 
         private string RestCall(string url)
@@ -111,7 +125,6 @@ namespace Survey.Controllers
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "GET";
-            //httpWebRequest.AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip;
 
             var content = string.Empty;
 
