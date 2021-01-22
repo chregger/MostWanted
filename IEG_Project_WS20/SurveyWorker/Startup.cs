@@ -13,7 +13,7 @@ namespace SurveyWorker
     public class Startup
     {
         private readonly Guid _serviceId = Guid.NewGuid();
-        private const string ServiceType = "SurveyWorker";
+        private const string ServiceType = "Administration";
         private const string ServiceUri = "";
 
         public Startup(IConfiguration configuration)
@@ -26,12 +26,7 @@ namespace SurveyWorker
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc(options =>
-            {
-                options.RespectBrowserAcceptHeader = true; // false by default
-            });
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1).AddXmlSerializerFormatters();
-            //services.AddMvc(options => { options.OutputFormatters.Insert(0, new XmlOutputFormatter()); });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,15 +41,17 @@ namespace SurveyWorker
                 app.UseHsts();
             }
 
+            OnStartup();
+
             app.UseHttpsRedirection();
             app.UseMvc();
             applicationLifetime.ApplicationStopping.Register(OnShutdown);
+            //GetDatabasePassword();
         }
 
         private void OnStartup()
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://most-wanted-discovery.azurewebsites.net/api/ServiceDiscovery/");
-            //var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://localhost:44323/api/ServiceDiscovery");
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create("https://mostwanteddiscovery.azurewebsites.net/api/ServiceDiscovery/");
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "POST";
 
@@ -62,7 +59,7 @@ namespace SurveyWorker
             {
                 var json = new JObject
                 {
-                    ["ID"] = _serviceId,
+                    ["ServiceID"] = _serviceId,
                     ["ServiceType"] = ServiceType,
                     ["ServiceUri"] = ServiceUri
                 };
@@ -75,8 +72,7 @@ namespace SurveyWorker
 
         private void OnShutdown()
         {
-            var httpWebRequest = (HttpWebRequest)WebRequest.Create($"https://most-wanted-discovery.azurewebsites.net/api/ServiceDiscovery/id/" + _serviceId);
-            //var httpWebRequest = (HttpWebRequest)WebRequest.Create("http://localhost:44323/api/ServiceDiscovery");
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create($"https://mostwanteddiscovery.azurewebsites.net/api/ServiceDiscovery/" + _serviceId);
             httpWebRequest.ContentType = "application/json";
             httpWebRequest.Method = "DELETE";
 
