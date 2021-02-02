@@ -15,13 +15,12 @@ namespace Survey.Controllers
     public class SurveyController : ControllerBase
     {
 
-        //private const int MAX_RETRIES = 2;
         private const int SERVICES = 1;
         private int CURRENT_SERVICE = 0;
         private const string URL_BASE_1 = "https://mostwantedsurveyworker";
         private const string URL_BASE_2 = ".azurewebsites.net/api/SurveyWorker/";
         private string currentUrl = "https://mostwantedsurveyworker.azurewebsites.net/api/SurveyWorker/";
-        //private int RETRY = 0;
+        private int RETRY = 5;
         private readonly Logger _logger;
 
         public SurveyController()
@@ -113,7 +112,6 @@ namespace Survey.Controllers
                 streamWriter.Write(json);
             }
 
-            //httpWebRequest.BeginGetResponse(null, null);
             var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
             using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
             {

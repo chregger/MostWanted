@@ -99,6 +99,10 @@ namespace Administration.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Add answert to Answer database
+        /// </summary>
+        /// <param name="answer"></param>
         private void AddAnswer(JObject answer)
         {
             using (var conn = new SqlConnection(DbConnectionString))
@@ -126,6 +130,11 @@ namespace Administration.Controllers
             }
         }
 
+        /// <summary>
+        /// Modifies an already existing answer in the database
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="answer"></param>
         private void UpdateAnswer(string id, JObject answer)
         {
             using (var conn = new SqlConnection(DbConnectionString))
@@ -160,6 +169,10 @@ namespace Administration.Controllers
             }
         }
 
+        /// <summary>
+        /// Removes an answer from database
+        /// </summary>
+        /// <param name="id"></param>
         private void DeleteAnswer(int id)
         {
             using (var conn = new SqlConnection(DbConnectionString))
@@ -172,7 +185,6 @@ namespace Administration.Controllers
                     DbType = DbType.Int64,
                     Value = id
                 });
-
                 using (var reader = cmd.ExecuteReader())
                 {
 
